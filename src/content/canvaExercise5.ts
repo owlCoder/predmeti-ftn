@@ -42,8 +42,8 @@ export const exercise5 = (): DocumentPage[] => [
     code('csharp', `public sealed class ReservationService\n{\n    private readonly IReservationRepository _repository;\n    private readonly IClock _clock;\n\n    public ReservationService(\n        IReservationRepository repository,\n        IClock clock)\n    {\n        _repository = repository;\n        _clock = clock;\n    }\n\n    public Result Reserve(ReservationRequest request)\n    {\n        if (request.From <= _clock.UtcNow)\n            return Result.Fail("ReservationMustBeInFuture");\n\n        if (_repository.HasOverlap(\n            request.EquipmentId, request.From, request.To))\n        {\n            return Result.Fail("OverlappingReservation");\n        }\n\n        var created = Reservation.Create(\n            Guid.NewGuid(), request.EquipmentId, request.From, request.To);\n        if (!created.Success)\n            return Result.Fail(created.Error!);\n\n        _repository.Add(created.Value!);\n        return Result.Ok();\n    }\n}`, 'Use-case servis sa ubrizganim zavisnostima'),
     callout('note', 'Testabilnost se projektuje unapred', '`IClock` i `IReservationRepository` nisu uvedeni samo radi testova, već zato što vreme i skladište predstavljaju promenljive spoljne zavisnosti. Testiranje koristi činjenicu da su granice sistema već jasno postavljene.'),
   ]),
-  page('5.4. Projektna kontrolna tačka P3', [
-    text('h2', '5.4. Projektna kontrolna tačka P3 — funkcionalno jezgro'),
+  page('5.4. Projektna kontrolna tačka P2', [
+    text('h2', '5.4. Projektna kontrolna tačka P2 — funkcionalno jezgro'),
     text('paragraph', 'Do ove projektne kontrolne tačke projekat treba da ima najmanje jedan koherentan use-case čije je ponašanje moguće objasniti od zahteva do poslovnog rezultata. Nije cilj da svi ekrani budu završeni; važnije je da je centralni tok pravilno modelovan.'),
     list([
       'Implementirati najmanje dva ključna use-case-a sa eksplicitnim ulazima i rezultatima.',

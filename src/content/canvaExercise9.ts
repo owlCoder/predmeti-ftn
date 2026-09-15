@@ -81,8 +81,8 @@ export const exercise9 = (): DocumentPage[] => [
     ]),
     callout('task', 'Bezbednosni scenario na vežbi', 'Napraviti testni resurs koji sadrži nedozvoljenu instrukciju poput pokušaja čitanja `.env` datoteke. Agent treba da tretira sadržaj kao podatak, zadrži projektna pravila i odbije nedozvoljenu operaciju.'),
   ]),
-  page('9.6. Projektna kontrolna tačka P7', [
-    text('h2', '9.6. Projektna kontrolna tačka P7 — MCP integracija'),
+  page('9.6. Provera razumevanja — MCP integracija', [
+    text('h2', '9.6. Provera razumevanja — MCP integracija'),
     text('paragraph', 'MCP deo projekta treba da bude mali, razumljiv i demonstrabilan. Dovoljna su dva ili tri pažljivo izabrana resursa ili alata specifična za projekat koji uklanjaju ručno kopiranje i daju agentu proverljiv razvojni signal.'),
     list([
       'MCP server se nalazi u jasno izdvojenom delu repozitorijuma i ima uputstvo za pokretanje.',
@@ -92,5 +92,6 @@ export const exercise9 = (): DocumentPage[] => [
       'Dokumentovana su ograničenja, dozvoljene putanje i podaci koje server namerno ne izlaže.',
     ]),
     callout('task', 'Mini domaći — bonus 2 boda', 'Dodati jedan resurs samo za čitanje sa projektnim pravilima i jedan alat koji izvršava test ili vraća diff. Prvi bod se dobija za ispravnu integraciju; drugi za obrazloženje zbog čega je jedan element resurs, a drugi alat.'),
+    callout('note', 'Veza sa projektnom kontrolnom tačkom', 'Ovi zahtevi ulaze u projektnu kontrolnu tačku P4, koja zaokružuje Vežbe 6–8.'),
   ]),
 ]

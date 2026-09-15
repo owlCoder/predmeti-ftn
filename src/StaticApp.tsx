@@ -4,8 +4,11 @@ import { practicum2026 } from './content/canvaPracticum'
 import { presentationDecks, type PresentationDeck } from './content/presentations'
 import { checkpoints, type Checkpoint } from './content/checkpoints'
 import { oibPracticum2026 } from './content/oib/oibPracticum'
-import { oibPresentationDecks } from './content/oib/oibPresentations'
+import { oibThematicPresentationDecks } from './content/oib/oibThematicPresentations'
 import { oibCheckpoints } from './content/oib/oibCheckpoints'
+import { odpPracticum2026 } from './content/odp/odpPracticum'
+import { odpThematicPresentationDecks } from './content/odp/odpThematicPresentations'
+import { odpCheckpoints } from './content/odp/odpCheckpoints'
 import { ACCENTS, highlightCode } from './utils'
 import './static-site.css'
 import './presentations.css'
@@ -380,7 +383,7 @@ function StaticDocument({ doc }: { doc: CourseDocument }) {
                 ))}
               </article>
               <footer className="document-end">
-                <span>Elementi razvoja softvera</span>
+                <span>{doc.footerText}</span>
                 <span>Univerzitet u Novom Sadu · Fakultet tehničkih nauka</span>
               </footer>
             </main>
@@ -566,9 +569,6 @@ function PresentationsView({ presentationDecks }: { presentationDecks: Presentat
           <aside className="deck-overview">
             <h3>Cilj prezentacije</h3>
             <p>{deck.goal}</p>
-            <ol>
-              {deck.slides.map((item, index) => <li key={`${deck.id}-${item.title}`}>{index + 1}. {item.title}</li>)}
-            </ol>
           </aside>
 
           <div className="floating-controls no-print">
@@ -713,8 +713,8 @@ const subjects: Subject[] = [
     id: 'odp',
     name: 'Osnove distribuiranog programiranja',
     semester: 'letnji',
-    available: false,
-    blurb: 'Materijal se priprema za letnji semestar.',
+    available: true,
+    blurb: 'Praktikum, prezentacije za vežbe i kontrolne tačke projektnog rada iz distribuiranih sistema.',
     accent: 'linear-gradient(145deg, #059669 0%, #047857 48%, #065f46 100%)',
     accentSoft: 'rgba(5,150,105,.14)',
   },
@@ -808,7 +808,13 @@ function SubjectSelector({ onOpenSubject }: { onOpenSubject: (id: string) => voi
 
 export default function StaticApp() {
   const [subject, setSubject] = useState<string | null>(
-    window.location.hash.startsWith('#ers') ? 'ers' : window.location.hash.startsWith('#oib') ? 'oib' : null,
+    window.location.hash.startsWith('#ers')
+      ? 'ers'
+      : window.location.hash.startsWith('#oib')
+        ? 'oib'
+        : window.location.hash.startsWith('#odp')
+          ? 'odp'
+          : null,
   )
 
   const openSubject = (id: string) => {
@@ -849,8 +855,26 @@ export default function StaticApp() {
         academicYear="2026/2027"
         titlePrefix="OIB"
         doc={oibPracticum2026}
-        presentationDecks={oibPresentationDecks}
+        presentationDecks={oibThematicPresentationDecks}
         checkpoints={oibCheckpoints}
+      />
+    )
+  }
+
+  if (subject === 'odp') {
+    return (
+      <CourseApp
+        onBack={backToSubjects}
+        hashPrefix="odp"
+        brandInitial="P"
+        brandAccent="linear-gradient(145deg, #059669 0%, #047857 48%, #065f46 100%)"
+        brandShadow="rgba(5,150,105,.20)"
+        courseName="Osnove distribuiranog programiranja"
+        academicYear="2026/2027"
+        titlePrefix="ODP"
+        doc={odpPracticum2026}
+        presentationDecks={odpThematicPresentationDecks}
+        checkpoints={odpCheckpoints}
       />
     )
   }

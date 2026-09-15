@@ -120,7 +120,7 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P1 — prvi dokaz uređenog razvoja',
+        title: 'P1 (12.10.) — prvi dokaz uređenog razvoja',
         lead: 'Na prvoj kontrolnoj tački tim pokazuje da razume problem i da ume da vodi promenu kroz ceo razvojni tok.',
         points: [
           'zajednički repozitorijum i početni README',
@@ -231,7 +231,7 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P2 — arhitektura mora biti objašnjiva',
+        title: 'P2 (26.10.) — arhitektura mora biti objašnjiva',
         lead: 'Do druge kontrolne tačke tim pokazuje najmanje jedan vertikalni prolaz kroz sistem sa jasnim granicama odgovornosti.',
         points: [
           'tanak ulazni sloj',
@@ -343,8 +343,8 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P3 — koherentni slučajevi upotrebe',
-        lead: 'Do treće kontrolne tačke projekat treba da pokaže da poslovno ponašanje ima jasne granice i eksplicitne ishode.',
+        title: 'P2 (26.10.) — koherentni slučajevi upotrebe',
+        lead: 'Do druge kontrolne tačke projekat treba da pokaže da poslovno ponašanje ima jasne granice i eksplicitne ishode.',
         points: [
           'jasan ulaz i rezultat',
           'pravila na odgovarajućem mestu',
@@ -454,8 +454,8 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P4 — testirano funkcionalno jezgro',
-        lead: 'Do četvrte kontrolne tačke tim treba da ima pouzdanu regresionu zaštitu ključnog poslovnog ponašanja.',
+        title: 'P3 (16.11.) — testirano funkcionalno jezgro',
+        lead: 'Do treće kontrolne tačke tim treba da ima pouzdanu regresionu zaštitu ključnog poslovnog ponašanja.',
         points: [
           'testovi ključnih uspešnih tokova',
           'negativni i granični scenariji',
@@ -678,8 +678,8 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P5 i P6 — ponovljiv i proverljiv tok',
-        lead: 'Kontrolne tačke traže da tim pokaže da AI podrška ima jasna pravila, ponovljive procedure i ograničene uloge.',
+        title: 'P4 (07.12.) — ponovljiv i proverljiv tok',
+        lead: 'Poslednja kontrolna tačka traži da tim pokaže da AI podrška ima jasna pravila, ponovljive procedure i ograničene uloge.',
         points: [
           'projektne instrukcije u repozitorijumu',
           'evidencija reprezentativne upotrebe',
@@ -789,7 +789,7 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P7 — mala i korisna MCP integracija',
+        title: 'P4 (07.12.) — mala i korisna MCP integracija',
         lead: 'Za projekat je dovoljno nekoliko pažljivo izabranih funkcionalnosti koje tim ume da objasni i demonstrira.',
         points: [
           'najmanje jedan resurs ili ekvivalentan kontekst',
@@ -900,7 +900,7 @@ export const presentationDecks: PresentationDeck[] = [
         ],
       },
       {
-        title: 'P8 — sistem mora biti objašnjiv i proverljiv',
+        title: 'P4 (07.12.) — sistem mora biti objašnjiv i proverljiv',
         lead: 'Završni cilj nije projekat koji „radi zbog AI-a“, već sistem koji tim razume, ume da proveri i može da odbrani.',
         points: [
           'najmanje dve determinističke zaštite',

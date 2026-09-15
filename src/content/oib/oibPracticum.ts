@@ -1,12 +1,6 @@
 import type { Block, CourseDocument, DocumentPage } from '../../types'
-import { oibExercise1 } from './oibExercise1'
-import { oibExercise2 } from './oibExercise2'
-import { oibExercise3 } from './oibExercise3'
-import { oibExercise4 } from './oibExercise4'
-import { oibExercise5 } from './oibExercise5'
-import { oibExercise6 } from './oibExercise6'
-import { oibExercise7 } from './oibExercise7'
-import { oibExercise8 } from './oibExercise8'
+import { oibThematicExercises } from './oibThematicExercises'
+import { oibCheckpoints } from './oibCheckpoints'
 import { reflowPages } from '../contentLayout'
 import { text, list, callout, table, page } from '../canvaPracticumShared'
 
@@ -31,7 +25,7 @@ const cover = (): DocumentPage => ({
     institution(),
     { id: id('title'), type: 'text', variant: 'title', html: 'Praktikum iz predmeta Osnove informacione bezbednosti', align: 'center' },
     { id: id('subtitle'), type: 'text', variant: 'subtitle', html: 'Studijska 2026/2027. godina', align: 'center' },
-    { id: id('quote'), type: 'text', variant: 'quote', html: 'Radni materijal za vežbe, samostalno ponavljanje i kontinuiran razvoj projekta iz oblasti informacione bezbednosti.', align: 'center' },
+    { id: id('quote'), type: 'text', variant: 'quote', html: 'Radni materijal za vežbe, samostalno ponavljanje i sistematsko razumevanje oblasti informacione bezbednosti.', align: 'center' },
     { id: id('caption'), type: 'text', variant: 'caption', html: 'Univerzitet u Novom Sadu · Fakultet tehničkih nauka · Primenjeno softversko inženjerstvo', align: 'center' },
   ],
 })
@@ -39,36 +33,52 @@ const cover = (): DocumentPage => ({
 const introPages = (): DocumentPage[] => [
   page('0.1. Kako koristiti praktikum', [
     text('h1', '0.1. Kako koristiti praktikum'),
-    text('paragraph', 'Praktikum prati jedan zajednički projekat — platformu za upravljanje informacionom bezbednošću i digitalnim poverenjem, koju svaki tim gradi kroz semestar. Svaka vežba sadrži teorijsko objašnjenje, konkretan primer, i zadatke koji povezuju gradivo sa dodeljenom projektnom celinom. Cilj je da student nakon časa ume da objasni ne samo šta je implementirao, već i koji je threat/misuse scenario razmatran, kojom kontrolom je ublažen i kako je to dokazano testom.'),
+    text('paragraph', 'Praktikum je samostalan materijal za razumevanje informacione bezbednosti. Svaka vežba objašnjava temu kroz problem koji rešava, razloge zbog kojih je važna, tipične greške i način na koji se odluka prepoznaje u razvoju informacionih sistema. Cilj je da student nakon vežbe može samostalno da obnovi princip i primeni ga na dodeljenoj projektnoj celini, a ne da zapamti jedan konkretan primer.'),
+    callout('info', 'Od metode do projekta', 'Praktikum ne daje gotovo bezbednosno rešenje za projekat. Svaki tim dobija dodeljenu projektnu celinu (npr. identitet, autorizaciju, audit ili detekciju) i princip sa vežbe primenjuje na sopstveni domen, uz obrazloženje odluke na projektnoj kontrolnoj tački.'),
     table(['Faza', 'Preporučeni način rada'], [
-      ['Pre vežbe', 'Pročitati uvodni deo oblasti i označiti pojmove koji zahtevaju dodatno razjašnjenje.'],
-      ['Tokom vežbe', 'Pratiti demonstraciju i obrazloženje bezbednosnih odluka, ne samo konačan kod.'],
-      ['Posle vežbe', 'Primeniti princip na dodeljenoj projektnoj celini i sačuvati sledljiv trag kroz commit, test i audit zapis.'],
-      ['Pre projektne kontrolne tačke', 'Proći kontrolnu listu, proveriti testove i threat model. Svaki član tima treba da ume da obrazloži urađeno.'],
+      ['Pre vežbe', 'Pročitati temu i izdvojiti pretpostavke koje bi u informacionom sistemu mogle biti pogrešne.'],
+      ['Tokom vežbe', 'Povezati pojam sa njegovom posledicom u realnom razvoju, a ne samo sa nazivom klase ili endpointa.'],
+      ['Posle vežbe', 'Povezati princip sa primerom sistema i objasniti dokaz kroz test, odluku ili audit trag.'],
+      ['Pred odbranu', 'Objasniti problem, izabranu kontrolu, njeno ograničenje i način na koji je ponašanje provereno.'],
     ]),
     callout('info', 'Defanzivna orijentacija', 'Praktikum ne zahteva razvoj eksploita, malvera ni napad na realne sisteme. Sumnjiva aktivnost, greška konfiguracije ili pokušaj nedozvoljenog pristupa reprodukuju se kontrolisanim simulatorima i testnim identitetima.'),
     callout('note', 'Jezik i alati', 'Primeri su pretežno u C#/.NET okruženju. Druga tehnologija može biti odobrena kada tim obezbedi interoperabilnost i ekvivalentan nivo testiranja i bezbednosne kontrole.'),
   ]),
-  page('0.2. Tok semestra i projekta', [
-    text('h1', '0.2. Tok semestra i projekta'),
-    text('paragraph', 'Praktikum je organizovan u osam povezanih vežbi koje prate tri razvojna nivoa projektnih celina. Prve četiri vežbe grade osnovni (R1) model — identitet, autorizaciju, politike i asset inventory — i zaokružuju se testiranom baznom linijom `manual-core-baseline`. Naredne dve vežbe uvode operativni (R2) nivo: MFA, sesije, privilegovan pristup i operativni bezbednosni ciklus od detekcije do incidenta. Poslednje dve vežbe uvode napredni (R3) nivo: policy engine, risk, threat modeling i naprednu analitiku.'),
+  page('0.2. Tok gradiva', [
+    text('h1', '0.2. Tok gradiva'),
+    text('paragraph', 'Osam vežbi prati prirodan tok bezbednosnog razmišljanja: od identiteta i odluke o pristupu, preko podataka, pravila i granica poverenja, do operativne reakcije, procene rizika i unapređivanja kontrola. Redosled pomaže da se kasnije teme oslone na već razumljive pojmove.'),
     list([
-      'P1 — organizacioni model, identitet, uloge i osnovna autentikacija.',
-      'P2 — object-level autorizacija, klasifikacija podataka i neizbrisiv audit log.',
-      'P3 — verzionisan policy katalog, secure configuration baseline i observability.',
-      'P4 — zaokruživanje R1 nivoa (asset, crypto, exposure, retention) i Git tag `manual-core-baseline`.',
-      'P5 — MFA/step-up autentikacija, sesije sa revocation i Just-in-Time privilegovan pristup.',
-      'P6 — detekcija, alert triage, upravljanje incidentom i vulnerability registry.',
-      'P7 — policy engine, risk register i sistematski threat modeling workflow.',
-      'P8 — napredna analitika, kontrolisan odgovor i završna, objašnjiva odbrana projekta.',
+      'Identitet i RBAC: ko pristupa sistemu, sa kojim pravom i zašto.',
+      'Autorizacija i podaci: odluka nad konkretnim resursom i osetljivost informacije.',
+      'Politike i granice poverenja: pravila, konfiguracija, imovina i threat modeling.',
+      'Operativna bezbednost: sesije, MFA, tajne, detekcija i incident.',
+      'Napredne odluke: kontekstualna pravila, rizik, korelacija i dokaz efektivnosti.',
     ]),
   ]),
 ]
 
+const checkpointBlocks = (checkpoint: (typeof oibCheckpoints)[number]): Block[] => [
+  text('h2', `${checkpoint.code} — ${checkpoint.title}`),
+  callout('note', 'Kontrolna tačka', 'Ova tačka zaokružuje prethodne teme. Organizacioni detalji i zahtevi nalaze se u posebnom odeljku kontrolnih tačaka.'),
+]
+
+const PAGES_PER_TOPIC = 9
+const CHECKPOINT_AFTER_TOPIC = [2, 3, 4, 8]
+
+function appendCheckpoints(pages: DocumentPage[]) {
+  const endOfExercisePair = new Map(
+    CHECKPOINT_AFTER_TOPIC.map((topicNumber, checkpointIndex) => [topicNumber * PAGES_PER_TOPIC - 1, oibCheckpoints[checkpointIndex]]),
+  )
+  return pages.map((item, index) => {
+    const checkpoint = endOfExercisePair.get(index)
+    return checkpoint ? { ...item, blocks: [...item.blocks, ...checkpointBlocks(checkpoint)] } : item
+  })
+}
+
 const summaryPages = (): DocumentPage[] => [
   page('Sažetak: bezbednost kao sledljiv, dokaziv proces', [
     text('h1', 'Sažetak: bezbednost kao sledljiv, dokaziv proces'),
-    text('paragraph', 'Kroz osam vežbi projekat gradi jedan konzistentan lanac: Asset → Threat/misuse → Security Requirement → Control → Security Test → Evidence. Taj lanac ostaje isti bez obzira na to da li se radi o osnovnoj autentikaciji, privilegovanom pristupu ili naprednoj attack-path analitici — menja se samo nivo sistema na kome se primenjuje.'),
+    text('paragraph', 'Kroz osam vežbi gradi se jedan konzistentan lanac: Asset → Threat/misuse → Security Requirement → Control → Security Test → Evidence. Taj lanac ostaje isti bez obzira na to da li se radi o osnovnoj autentikaciji, privilegovanom pristupu ili naprednoj attack-path analitici — menja se samo nivo sistema na kome se primenjuje.'),
     table(['Nivo', 'Šta uvodi'], [
       ['R1 — osnovni', 'Identitet, resursi, klasifikacija, autorizacija, politike i audit.'],
       ['R2 — operativni', 'MFA, sesije, secrets, detekcija, incidenti, vulnerabilities.'],
@@ -81,13 +91,13 @@ const summaryPages = (): DocumentPage[] => [
 const literaturePages = (): DocumentPage[] => [
   page('Preporučena literatura i dokumentacija', [
     text('h1', 'Preporučena literatura i dokumentacija'),
-    text('paragraph', 'Literatura služi za produbljivanje tema iz praktikuma. Preporuka je da se čita uz konkretan primer iz projektne celine, jer se bezbednosni principi najbrže usvajaju kada student može da poveže definiciju sa sopstvenim threat modelom, testom ili audit zapisom.'),
+    text('paragraph', 'Literatura služi za produbljivanje tema iz praktikuma. Preporuka je da se čita uz konkretan primer informacionog sistema, jer se bezbednosni principi najbrže usvajaju kada student može da poveže definiciju sa threat modelom, testom ili audit zapisom.'),
     list([
       'OWASP — <i>Application Security Verification Standard (ASVS)</i> i <i>OWASP Top 10</i>: <a href="https://owasp.org">owasp.org</a>.',
       'NIST — <i>Digital Identity Guidelines (SP 800-63)</i>: <a href="https://pages.nist.gov/800-63-3/">pages.nist.gov/800-63-3</a>.',
       'NIST — <i>Zero Trust Architecture (SP 800-207)</i>: <a href="https://csrc.nist.gov/publications/detail/sp/800-207/final">csrc.nist.gov</a>.',
       'Adam Shostack — <i>Threat Modeling: Designing for Security</i>.',
-      'NUnit dokumentacija: <a href="https://docs.nunit.org">docs.nunit.org</a>; Moq projekat i dokumentacija: <a href="https://github.com/devlooped/moq">github.com/devlooped/moq</a>.',
+      'NUnit dokumentacija: <a href="https://docs.nunit.org">docs.nunit.org</a>; Moq dokumentacija: <a href="https://github.com/devlooped/moq">github.com/devlooped/moq</a>.',
       'Microsoft Learn — ASP.NET Core Identity, autorizacija i bezbedna konfiguracija: <a href="https://learn.microsoft.com/aspnet/core/security/">learn.microsoft.com/aspnet/core/security</a>.',
       'MITRE ATT&CK — okvir za razumevanje taktika i tehnika (koristi se isključivo kao referentni rečnik, ne kao uputstvo za napad): <a href="https://attack.mitre.org">attack.mitre.org</a>.',
     ]),
@@ -109,8 +119,19 @@ function contentsPage(body: DocumentPage[]): DocumentPage {
   const exerciseNumbers = Array.from({ length: 8 }, (_, index) => index + 1)
   const wanted = [
     ['Uvod i način rada', '0.1. Kako koristiti praktikum'],
-    ['Tok semestra i projekta', '0.2. Tok semestra i projekta'],
-    ...exerciseNumbers.map((number) => [`Vežba ${number}`, `Vežba ${number}`] as [string, string]),
+    ['Tok gradiva', '0.2. Tok gradiva'],
+    ['Vežba 1', 'Vežba 1'],
+    ['Vežba 2', 'Vežba 2'],
+    ['P1 — Identitet, uloge i autorizacija', 'P1 — Identitet'],
+    ['Vežba 3', 'Vežba 3'],
+    ['P2 — Politike, klasifikacija i baseline', 'P2 — Politike'],
+    ['Vežba 4', 'Vežba 4'],
+    ['P3 — Testiranje i manual-core-baseline', 'P3 — Testiranje'],
+    ['Vežba 5', 'Vežba 5'],
+    ['Vežba 6', 'Vežba 6'],
+    ['Vežba 7', 'Vežba 7'],
+    ['Vežba 8', 'Vežba 8'],
+    ['P4 — Završna odbrana', 'P4 — Operativna'],
     ['Sažetak', 'Sažetak: bezbednost'],
     ['Literatura i dokumentacija', 'Preporučena literatura'],
   ] as Array<[string, string]>
@@ -130,16 +151,11 @@ function contentsPage(body: DocumentPage[]): DocumentPage {
   ])
 }
 
+const exercisePages = appendCheckpoints(oibThematicExercises())
+
 const bodyPages = [
   ...chapter(introPages(), 'Uvod'),
-  ...chapter(oibExercise1(), 'Vežba 1'),
-  ...chapter(oibExercise2(), 'Vežba 2'),
-  ...chapter(oibExercise3(), 'Vežba 3'),
-  ...chapter(oibExercise4(), 'Vežba 4'),
-  ...chapter(oibExercise5(), 'Vežba 5'),
-  ...chapter(oibExercise6(), 'Vežba 6'),
-  ...chapter(oibExercise7(), 'Vežba 7'),
-  ...chapter(oibExercise8(), 'Vežba 8'),
+  ...chapter(exercisePages, 'Vežbe'),
   ...chapter(summaryPages(), 'Zaključak'),
   ...chapter(literaturePages(), 'Literatura'),
 ]

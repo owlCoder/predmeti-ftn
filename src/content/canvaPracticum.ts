@@ -54,14 +54,10 @@ const introPages = (): DocumentPage[] => [
     text('paragraph', 'Praktikum je organizovan u osam povezanih vežbi. Prva vežba objedinjuje zahteve, backlog, Git i timski razvojni tok. Druga povezuje OOP i Clean Code sa SOLID principima i Clean Architecture. Nakon poslovne logike i testiranja uvodi se posebna oblast integracije modula i podataka, što je važno za zajednički proizvod na kome radi više timova. Završni deo praktikuma obrađuje kontrolisan razvoj uz AI podršku, MCP i determinističke mehanizme provere.'),
     image('/course-assets/semester-map.svg', 'Tok praktikuma: zahtevi i razvojni proces → arhitektura → poslovna logika → testiranje → integracija modula → razvoj uz AI podršku → MCP → završna provera kvaliteta.', 'Mapa semestra'),
     list([
-      'P1 — problem, backlog, kriterijumi prihvatanja i uredan razvojni tok kroz Git i pull request.',
-      'P2 — arhitektonske granice i najmanje jedan vertikalni prolaz kroz sistem.',
-      'P3 — koherentni slučajevi upotrebe i eksplicitni poslovni ishodi.',
-      'P4 — testirano funkcionalno jezgro i Git tag `manual-core-baseline`.',
-      'P5 — stabilne projektne instrukcije, strukturirani izlaz i uredna evidencija u `AI_USAGE.md`.',
-      'P6 — ponovljive procedure i najmanji smisleni agentski tok rada.',
-      'P7 — MCP resursi i alati povezani sa stvarnim projektnim signalima.',
-      'P8 — hook i guardrail mehanizmi, evaluacioni scenariji, vršnjačka provera kvaliteta i završna odbrana.',
+      'P1 (Vežba 1–2) — problem, backlog, kriterijumi prihvatanja i uredan razvojni tok kroz Git i pull request.',
+      'P2 (Vežba 2–3) — arhitektonske granice, najmanje jedan vertikalni prolaz kroz sistem i koherentni slučajevi upotrebe.',
+      'P3 (Vežba 4) — testirano funkcionalno jezgro i Git tag `manual-core-baseline`.',
+      'P4 (Vežba 6–8) — stabilne projektne instrukcije, ponovljive procedure, MCP integracija, hook i guardrail mehanizmi, evaluacioni scenariji i završna odbrana.',
     ]),
   ]),
 ]

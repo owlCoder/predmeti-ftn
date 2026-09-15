@@ -82,8 +82,8 @@ export const exerciseAiWorkflow = (): DocumentPage[] => [
     ]),
   ]),
 
-  page('6.6. Projektna kontrolna tačka P5', [
-    text('h2', '6.6. Projektna kontrolna tačka P5 — instrukcije i proverljiv izlaz'),
+  page('6.6. Provera razumevanja — instrukcije i proverljiv izlaz', [
+    text('h2', '6.6. Provera razumevanja — instrukcije i proverljiv izlaz'),
     list([
       '`AI_INSTRUCTIONS.md` sadrži stabilna projektna pravila i ograničenja.',
       'Najmanje jedan zadatak koristi unapred definisan strukturirani oblik izlaza.',
@@ -91,10 +91,11 @@ export const exerciseAiWorkflow = (): DocumentPage[] => [
       'Tim ume da objasni koje su sugestije prihvaćene, koje su odbačene i zbog čega.',
       'Rezultat AI alata se ne prihvata kao dokaz bez stvarnog razvojnog signala.'
     ]),
+    callout('note', 'Veza sa projektnom kontrolnom tačkom', 'Ovi zahtevi ulaze u projektnu kontrolnu tačku P4, koja zaokružuje Vežbe 6–8.'),
   ]),
 
-  page('6.7. Projektna kontrolna tačka P6', [
-    text('h2', '6.7. Projektna kontrolna tačka P6 — procedure i agentski tok'),
+  page('6.7. Provera razumevanja — procedure i agentski tok', [
+    text('h2', '6.7. Provera razumevanja — procedure i agentski tok'),
     list([
       'Najmanje dve ponovljive procedure imaju jasan ulaz, korake, izlaz i ograničenja.',
       'Najmanje dve agentske uloge imaju različite odgovornosti ili različite dozvole.',

@@ -104,8 +104,8 @@ exit 0`,'Primer determinističke provere rizičnih komandi'),
     ]),
     callout('task', 'Mini domaći — bonus 1 bod', 'Napraviti negativni evaluacioni scenario u kome agent treba da odbije rizičnu operaciju ili da prijavi nedovoljan kontekst. Prikazati očekivani i stvarni ishod i objasniti eventualnu razliku.'),
   ]),
-  page('10.6. Završna projektna kontrolna tačka P8', [
-    text('h2', '10.6. Završna projektna kontrolna tačka P8 — proverljiv razvoj uz podršku AI alata'),
+  page('10.6. Završna projektna kontrolna tačka P4', [
+    text('h2', '10.6. Završna projektna kontrolna tačka P4 — proverljiv razvoj uz podršku AI alata'),
     text('paragraph', 'Završni rezultat kursa nije projekat čiju implementaciju student ne razume, već softverski sistem čiji tim može da objasni zahteve, arhitekturu, testove i način na koji je AI uključen u razvoj. AI deo se vrednuje kroz dizajn toka rada, ograničenja, ponovljivost i način verifikacije.'),
     diagram('Završni razvojni tok', [
       ['Zahtev', 'User Story i kriterijumi', 'slate'],

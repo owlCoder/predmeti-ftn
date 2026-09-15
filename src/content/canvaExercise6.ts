@@ -63,8 +63,8 @@ export const exercise6 = (): DocumentPage[] => [
     ]),
     callout('info', 'Pitanje za pregled', 'Koji deo nepokrivenog koda nosi najveći rizik i koji test bi dao najviše novih informacija? To je korisnije pitanje od zahteva da se dostigne unapred zadat procenat.'),
   ]),
-  page('6.5. Projektna kontrolna tačka P4 — manual-core-baseline', [
-    text('h2', '6.5. Projektna kontrolna tačka P4 — manual-core-baseline'),
+  page('6.5. Projektna kontrolna tačka P3 — manual-core-baseline', [
+    text('h2', '6.5. Projektna kontrolna tačka P3 — manual-core-baseline'),
     text('paragraph', 'Ova kontrolna tačka razdvaja dve faze kursa. Do nje tim samostalno projektuje funkcionalno jezgro, arhitektonske granice i osnovne testove. Nakon toga AI dobija veću ulogu u radu sa kodom, ali sistem već poseduje dovoljno testova i strukture da se svaki predlog može nezavisno proveriti.'),
     list([
       'Ključni use-case-ovi imaju NUnit testove za uspešne i negativne scenarije.',

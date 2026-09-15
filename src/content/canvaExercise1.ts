@@ -31,6 +31,8 @@ export const exercise1 = (): DocumentPage[] => [
 
   page('1.2. Backlog, Tapiz Boards i plan rada', [
     text('h2', '1.2. Backlog, Tapiz Boards i plan rada'),
+    text('paragraph', 'Rad tima se odvija u ponovljivim ciklusima (sprintovima) unutar kojih se planira, implementira i preispituje ograničen obim posla. Product Backlog je zajednički izvor svih budućih stavki; Sprint Backlog i Increment nastaju kada tim za tekući sprint izabere i realizuje deo tog posla.'),
+    image('/course-assets/scrum-sprint-cycle.png', 'Product Backlog napaja Sprint Planning; tim potom prolazi kroz Daily Scrum, Sprint Review i Sprint Retrospective, dok povratne informacije i plan unapređenja zatvaraju ciklus.', 'Scrum — ciklus sprinta'),
     text('paragraph', 'Backlog je uređena lista rada, a ne arhiva nepovezanih ideja. Stavka koja ulazi u aktivan rad treba da ima dovoljno jasan cilj, prioritet, kriterijume prihvatanja i poznata ograničenja da tim može da proceni njen obim i započne implementaciju bez nagađanja o osnovnom poslovnom smislu.'),
     image('/course-assets/tapiz/03-backlog-view.webp', 'Product Backlog u Tapiz Boards-u omogućava timu da sagleda prioritete, stanje pripreme i plan narednog rada.', 'Tapiz Boards — pregled backlog-a'),
     table(['Status', 'Značenje'], [
@@ -43,6 +45,17 @@ export const exercise1 = (): DocumentPage[] => [
     ]),
     image('/course-assets/tapiz/02-board-overview.webp', 'Radna tabla prikazuje stvarno stanje stavki u dogovorenom razvojnom procesu.', 'Tapiz Boards — tok rada'),
     callout('note', 'Status mora odgovarati stvarnom stanju', 'Kartica se ne smatra završenom zato što je ručno premeštena u poslednju kolonu. Status Done znači da su ispunjeni kriterijumi prihvatanja, izvršene potrebne provere i integrisana odgovarajuća promena u repozitorijumu.'),
+    text('paragraph', 'Svaka stavka backlog-a je više od naslova. Detalj priče objedinjuje opis, kriterijume prihvatanja, prioritet, dodeljenu osobu, procenu obima i vezu sa sprintom — sve na jednom mestu, tako da se odluka o tome da li je stavka spremna za rad ne oslanja na usmeni dogovor ili razbacane napomene.'),
+    image('/course-assets/tapiz/05-create-or-edit-story.webp', 'Forma za kreiranje ili izmenu stavke: naslov, kolona, sprint i opis se definišu pre nego što stavka uđe u aktivan rad.', 'Tapiz Boards — kreiranje user story-ja'),
+    image('/course-assets/tapiz/06-acceptance-criteria-example.webp', 'Kriterijumi prihvatanja se pišu kao deo opisa priče, u obliku koji tim može direktno da prevede u testove ili demonstracioni scenario.', 'Tapiz Boards — kriterijumi prihvatanja u opisu priče'),
+    text('paragraph', 'Kada je stavka dovoljno velika ili nejasna da bi se implementirala u jednom koraku, razbija se na manje, proverljive korake kroz checklistu. Ovo nije birokratija — to je način da se veliki, rizičan zadatak pretvori u niz malih, nezavisno proverljivih koraka.'),
+    image('/course-assets/tapiz/07-task-breakdown.webp', 'Checklist unutar priče razlaže rad na male korake (wireframe, implementacija, testovi, code review) koje tim može pojedinačno da prati i otkačinje.', 'Tapiz Boards — raspodela zadataka unutar priče'),
+    text('paragraph', 'Board prikazuje samo stavke aktivnog sprinta i njihov status u dogovorenom toku. Premeštanje kartice između kolona treba da prati stvarnu promenu stanja rada, a ne da bude kozmetička radnja pred sastanak.'),
+    image('/course-assets/tapiz/08-workflow-transition.webp', 'Otvorena priča u statusu In Progress, sa vidljivim sprintom i vezom prema koloni na tabli — status u detalju i status na tabli su isti podatak, prikazan na dva mesta.', 'Tapiz Boards — promena statusa (workflow tranzicija)'),
+    text('paragraph', 'Prioritet i dodeljena osoba pomažu timu da odgovori na pitanje šta raditi sledeće i ko je odgovoran za ishod, dok se aktivnost i komentari čuvaju kao trag odluka i dogovora vezanih za tu stavku — umesto da se izgube u razgovoru van alata.'),
+    image('/course-assets/tapiz/09-priority-labels-assignees.webp', 'Visok prioritet i dodeljena osoba su vidljivi na samoj stavci, zajedno sa checklistom koja pokazuje koliko je posla još preostalo.', 'Tapiz Boards — prioritet i dodeljena osoba'),
+    image('/course-assets/tapiz/10-activity-comments.webp', 'Komentar na stavci beleži dogovor tima o narednom koraku, čineći odluku sledljivom i nezavisnom od usmenog dogovora.', 'Tapiz Boards — aktivnost i komentari'),
+    callout('info', 'Tapiz Boards je alat, ne cilj', 'Svrha ovih ekrana nije da se nauči jedan konkretan alat, već da se vidi kako backlog, kriterijumi prihvatanja, raspodela na zadatke, status i trag odluka rade zajedno kao jedan koherentan proces planiranja rada.'),
   ]),
 
   page('1.3. Git kao sledljiv zapis razvoja', [

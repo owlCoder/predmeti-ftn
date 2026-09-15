@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type CSSProperties } from 'react'
+import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactElement } from 'react'
 import type { Block, CourseDocument, DiagramBlock, TextBlock } from './types'
 import { practicum2026 } from './content/canvaPracticum'
 import { presentationDecks, type PresentationDeck } from './content/presentations'
@@ -7,6 +7,7 @@ import { ACCENTS, highlightCode } from './utils'
 import './static-site.css'
 import './presentations.css'
 import './checkpoints.css'
+import './subjects.css'
 
 type ActiveKey = 'praktikum' | 'prezentacije' | 'kontrolne-tacke'
 type ArtifactKind = 'figure' | 'listing' | 'table'
@@ -183,7 +184,7 @@ function DiagramView({ block, label }: { block: DiagramBlock; label?: string }) 
   )
 }
 
-function BlockView({ item }: { item: PreparedBlock }) {
+function BlockView({ item, onImageOpen }: { item: PreparedBlock; onImageOpen?: (src: string, alt: string) => void }) {
   const { block, anchor, artifactLabel } = item
 
   if (block.type === 'text') return <TextView block={block} anchor={anchor} />
@@ -218,9 +219,23 @@ function BlockView({ item }: { item: PreparedBlock }) {
   }
   if (block.type === 'diagram') return <DiagramView block={block} label={artifactLabel} />
   if (block.type === 'image') {
+    const src = assetUrl(block.src)
+    const alt = block.alt || block.caption || ''
     return (
       <figure className="image-figure keep-together" style={{ maxWidth: `${block.widthPercent || 100}%` }}>
-        <img src={assetUrl(block.src)} alt={block.alt || block.caption || ''} loading="lazy" />
+        <div className="image-frame">
+          <img src={src} alt={alt} loading="lazy" />
+          <button
+            className="image-expand-button no-print"
+            onClick={() => onImageOpen?.(src, alt)}
+            aria-label="Prikaži sliku uvećano"
+            title="Prikaži uvećano"
+          >
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 9V5a2 2 0 0 1 2-2h4M21 9V5a2 2 0 0 0-2-2h-4M3 15v4a2 2 0 0 0 2 2h4M21 15v4a2 2 0 0 1-2 2h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+        </div>
         <Caption label={artifactLabel} text={block.caption} />
       </figure>
     )
@@ -258,11 +273,66 @@ function DocumentCover() {
   )
 }
 
-function StaticDocument({ doc }: { doc: CourseDocument }) {
-  const { prepared, toc } = useMemo(() => prepareDocument(doc), [doc])
+const ZOOM_STEPS = [0.6, 0.7, 0.8, 0.9, 1, 1.1, 1.25, 1.4, 1.6]
+
+function ImageLightbox({ src, alt, onClose }: { src: string; alt: string; onClose: () => void }) {
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [onClose])
 
   return (
-    <div className="document-layout">
+    <div className="image-lightbox no-print" onClick={onClose}>
+      <button className="image-lightbox-close" onClick={onClose} aria-label="Zatvori">
+        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 6l12 12M18 6L6 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        </svg>
+      </button>
+      <img src={src} alt={alt} onClick={(event) => event.stopPropagation()} />
+    </div>
+  )
+}
+
+function StaticDocument({ doc }: { doc: CourseDocument }) {
+  const { prepared, toc } = useMemo(() => prepareDocument(doc), [doc])
+  const [zoom, setZoom] = useState(1)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [openImage, setOpenImage] = useState<{ src: string; alt: string } | null>(null)
+  const layoutRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleChange = () => setIsFullscreen(document.fullscreenElement === layoutRef.current)
+    document.addEventListener('fullscreenchange', handleChange)
+    return () => document.removeEventListener('fullscreenchange', handleChange)
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement === layoutRef.current) {
+        await document.exitFullscreen()
+      } else {
+        await layoutRef.current?.requestFullscreen()
+      }
+    } catch {
+      // Fullscreen može biti odbijen ako korisnička akcija nije prepoznata.
+    }
+  }
+
+  const zoomOut = () => setZoom((current) => {
+    const smaller = [...ZOOM_STEPS].reverse().find((step) => step < current)
+    return smaller ?? current
+  })
+
+  const zoomIn = () => setZoom((current) => {
+    const bigger = ZOOM_STEPS.find((step) => step > current)
+    return bigger ?? current
+  })
+
+  return (
+    <div className={`document-layout ${isFullscreen ? 'is-fullscreen' : ''}`} ref={layoutRef}>
       <aside className="toc-panel">
         <div className="toc-title">Sadržaj</div>
         <nav>
@@ -272,16 +342,50 @@ function StaticDocument({ doc }: { doc: CourseDocument }) {
         </nav>
       </aside>
 
-      <main className="document-paper">
-        <DocumentCover />
-        <article className="document-body">
-          {prepared.map((item, index) => <BlockView item={item} key={`${item.block.id}-${index}`} />)}
-        </article>
-        <footer className="document-end">
-          <span>Elementi razvoja softvera</span>
-          <span>Univerzitet u Novom Sadu · Fakultet tehničkih nauka</span>
-        </footer>
-      </main>
+      <div className="document-stage">
+        <div className="document-toolbar no-print">
+          <div className="zoom-controls" aria-label="Uvećanje stranice">
+            <button onClick={zoomOut} disabled={zoom <= ZOOM_STEPS[0]} aria-label="Umanji">−</button>
+            <button className="zoom-reset" onClick={() => setZoom(1)}>{Math.round(zoom * 100)}%</button>
+            <button onClick={zoomIn} disabled={zoom >= ZOOM_STEPS[ZOOM_STEPS.length - 1]} aria-label="Uvećaj">+</button>
+          </div>
+          <button
+            className="fullscreen-icon-button"
+            onClick={toggleFullscreen}
+            aria-label={isFullscreen ? 'Izađi iz celog ekrana' : 'Otvori preko celog ekrana'}
+            title={isFullscreen ? 'Izađi iz celog ekrana' : 'Ceo ekran'}
+          >
+            {isFullscreen ? (
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 3v4a2 2 0 0 1-2 2H3M21 9h-4a2 2 0 0 1-2-2V3M3 15h4a2 2 0 0 1 2 2v4M15 21v-4a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 9V5a2 2 0 0 1 2-2h4M21 9V5a2 2 0 0 0-2-2h-4M3 15v4a2 2 0 0 0 2 2h4M21 15v4a2 2 0 0 1-2 2h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            )}
+          </button>
+        </div>
+
+        <div className="document-scroll">
+          <div className="document-zoom-frame" style={{ '--doc-zoom': zoom } as CSSProperties}>
+            <main className="document-paper">
+              <DocumentCover />
+              <article className="document-body">
+                {prepared.map((item, index) => (
+                  <BlockView item={item} key={`${item.block.id}-${index}`} onImageOpen={(src, alt) => setOpenImage({ src, alt })} />
+                ))}
+              </article>
+              <footer className="document-end">
+                <span>Elementi razvoja softvera</span>
+                <span>Univerzitet u Novom Sadu · Fakultet tehničkih nauka</span>
+              </footer>
+            </main>
+          </div>
+        </div>
+      </div>
+
+      {openImage && <ImageLightbox src={openImage.src} alt={openImage.alt} onClose={() => setOpenImage(null)} />}
     </div>
   )
 }
@@ -344,6 +448,9 @@ function CheckpointsView() {
 function PresentationsView() {
   const [deckId, setDeckId] = useState(presentationDecks[0].id)
   const [slideIndex, setSlideIndex] = useState(0)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [deckZoom, setDeckZoom] = useState(1)
+  const stageRef = useRef<HTMLDivElement>(null)
   const deck = presentationDecks.find((item) => item.id === deckId) || presentationDecks[0]
   const slide = deck.slides[slideIndex] || deck.slides[0]
 
@@ -354,6 +461,49 @@ function PresentationsView() {
 
   const previousSlide = () => setSlideIndex((current) => Math.max(0, current - 1))
   const nextSlide = () => setSlideIndex((current) => Math.min(deck.slides.length - 1, current + 1))
+
+  useEffect(() => {
+    const handleChange = () => setIsFullscreen(document.fullscreenElement === stageRef.current)
+    document.addEventListener('fullscreenchange', handleChange)
+    return () => document.removeEventListener('fullscreenchange', handleChange)
+  }, [])
+
+  useEffect(() => {
+    if (!isFullscreen) {
+      setDeckZoom(1)
+      return
+    }
+    const canvas = stageRef.current?.querySelector('.slide-canvas') as HTMLElement | null
+    if (!canvas) return
+    const REFERENCE_WIDTH = 820
+    const updateZoom = () => {
+      const stage = stageRef.current
+      if (!stage || !canvas) return
+      const previousInlineZoom = canvas.style.zoom
+      canvas.style.zoom = '1'
+      const contentHeight = canvas.scrollHeight
+      canvas.style.zoom = previousInlineZoom
+      const availableWidth = stage.clientWidth - 112
+      const availableHeight = stage.clientHeight - 128
+      const scale = Math.min(availableWidth / REFERENCE_WIDTH, availableHeight / contentHeight)
+      setDeckZoom(Math.max(1, Math.min(2.6, scale)))
+    }
+    updateZoom()
+    window.addEventListener('resize', updateZoom)
+    return () => window.removeEventListener('resize', updateZoom)
+  }, [isFullscreen, slideIndex])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (document.fullscreenElement === stageRef.current) {
+        await document.exitFullscreen()
+      } else {
+        await stageRef.current?.requestFullscreen()
+      }
+    } catch {
+      // Fullscreen može biti odbijen ako korisnička akcija nije prepoznata.
+    }
+  }
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -382,7 +532,11 @@ function PresentationsView() {
           ))}
         </aside>
 
-        <section className="deck-stage">
+        <section
+          className={`deck-stage ${isFullscreen ? 'is-fullscreen' : ''}`}
+          ref={stageRef}
+          style={{ '--deck-zoom': deckZoom } as CSSProperties}
+        >
           <div className="deck-toolbar">
             <div className="deck-toolbar-title">
               <strong>{deck.title}</strong>
@@ -406,7 +560,6 @@ function PresentationsView() {
             )}
             {slide.example && <div className="slide-example"><strong>Primer</strong>{slide.example}</div>}
             {slide.question && <div className="slide-question"><strong>Pitanje za studente</strong>{slide.question}</div>}
-            {slide.note && <div className="speaker-note"><strong>Beleška za izlaganje</strong>{slide.note}</div>}
           </article>
 
           <aside className="deck-overview">
@@ -416,16 +569,35 @@ function PresentationsView() {
               {deck.slides.map((item, index) => <li key={`${deck.id}-${item.title}`}>{index + 1}. {item.title}</li>)}
             </ol>
           </aside>
+
+          <div className="floating-controls no-print">
+            <button
+              className="fullscreen-icon-button"
+              onClick={toggleFullscreen}
+              aria-label={isFullscreen ? 'Izađi iz celog ekrana' : 'Otvori preko celog ekrana'}
+              title={isFullscreen ? 'Izađi iz celog ekrana' : 'Ceo ekran'}
+            >
+              {isFullscreen ? (
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 3v4a2 2 0 0 1-2 2H3M21 9h-4a2 2 0 0 1-2-2V3M3 15h4a2 2 0 0 1 2 2v4M15 21v-4a2 2 0 0 1 2-2h4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 9V5a2 2 0 0 1 2-2h4M21 9V5a2 2 0 0 0-2-2h-4M3 15v4a2 2 0 0 0 2 2h4M21 15v4a2 2 0 0 1-2 2h-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                </svg>
+              )}
+            </button>
+          </div>
         </section>
       </section>
     </main>
   )
 }
 
-export default function StaticApp() {
-  const initial: ActiveKey = window.location.hash.startsWith('#prezentacije')
+function ErsCourseApp({ onBack }: { onBack: () => void }) {
+  const initial: ActiveKey = window.location.hash.startsWith('#ers/prezentacije')
     ? 'prezentacije'
-    : window.location.hash.startsWith('#kontrolne-tacke')
+    : window.location.hash.startsWith('#ers/kontrolne-tacke')
       ? 'kontrolne-tacke'
       : 'praktikum'
   const [active, setActive] = useState<ActiveKey>(initial)
@@ -441,21 +613,38 @@ export default function StaticApp() {
 
   const choose = (key: ActiveKey) => {
     setActive(key)
-    history.replaceState(null, '', `#${key}`)
+    history.replaceState(null, '', `#ers/${key}`)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
   return (
     <div className="site-shell">
       <header className="site-header">
-        <a className="site-brand" href="#praktikum" onClick={(event) => { event.preventDefault(); choose('praktikum') }}>
+        <button className="site-brand" onClick={onBack}>
           <span className="brand-mark">E</span>
-          <span><strong>ERS</strong><small>Elementi razvoja softvera</small></span>
-        </a>
+          <span><strong>Elementi razvoja softvera</strong><small>2026/2027</small></span>
+        </button>
         <nav className="document-switcher" aria-label="Dokumenti">
-          <button className={active === 'praktikum' ? 'active' : ''} onClick={() => choose('praktikum')}>Praktikum</button>
-          <button className={active === 'prezentacije' ? 'active' : ''} onClick={() => choose('prezentacije')}>Prezentacije</button>
-          <button className={active === 'kontrolne-tacke' ? 'active' : ''} onClick={() => choose('kontrolne-tacke')}>Kont. tačke</button>
+          <button className={active === 'praktikum' ? 'active' : ''} onClick={() => choose('praktikum')}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 5.5C4 4.67 4.67 4 5.5 4H12v16H5.5A1.5 1.5 0 0 1 4 18.5v-13ZM20 5.5c0-.83-.67-1.5-1.5-1.5H12v16h6.5a1.5 1.5 0 0 0 1.5-1.5v-13Z" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" />
+            </svg>
+            <span>Praktikum</span>
+          </button>
+          <button className={active === 'prezentacije' ? 'active' : ''} onClick={() => choose('prezentacije')}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="3" y="5" width="18" height="12" rx="1.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M8 21h8M12 17v4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+            </svg>
+            <span>Prezentacije</span>
+          </button>
+          <button className={active === 'kontrolne-tacke' ? 'active' : ''} onClick={() => choose('kontrolne-tacke')}>
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="12" cy="12" r="8.5" stroke="currentColor" strokeWidth="1.6" />
+              <path d="M9 12.3l1.8 1.8L15.5 9.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            <span>Kont. tačke</span>
+          </button>
         </nav>
       </header>
       <div className="tab-panel" key={active}>
@@ -463,4 +652,150 @@ export default function StaticApp() {
       </div>
     </div>
   )
+}
+
+type Subject = {
+  id: string
+  name: string
+  semester: 'zimski' | 'letnji'
+  available: boolean
+  blurb: string
+  accent: string
+  accentSoft: string
+}
+
+const subjects: Subject[] = [
+  {
+    id: 'ers',
+    name: 'Elementi razvoja softvera',
+    semester: 'zimski',
+    available: true,
+    blurb: 'Praktikum, prezentacije za vežbe i kontrolne tačke projekta.',
+    accent: 'linear-gradient(145deg, #2563eb 0%, #1d4ed8 48%, #3730a3 100%)',
+    accentSoft: 'rgba(37,99,235,.14)',
+  },
+  {
+    id: 'oib',
+    name: 'Osnove informacione bezbednosti',
+    semester: 'zimski',
+    available: false,
+    blurb: 'Materijal se priprema.',
+    accent: 'linear-gradient(145deg, #dc2626 0%, #b91c1c 48%, #7f1d1d 100%)',
+    accentSoft: 'rgba(220,38,38,.14)',
+  },
+  {
+    id: 'odp',
+    name: 'Osnove distribuiranog programiranja',
+    semester: 'letnji',
+    available: false,
+    blurb: 'Materijal se priprema za letnji semestar.',
+    accent: 'linear-gradient(145deg, #059669 0%, #047857 48%, #065f46 100%)',
+    accentSoft: 'rgba(5,150,105,.14)',
+  },
+]
+
+const subjectIcons: Record<string, ReactElement> = {
+  ers: (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 9l-4 3 4 3M16 9l4 3-4 3M13.5 6l-3 12" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  oib: (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M12 3l7 3v5c0 4.5-3 8.2-7 10-4-1.8-7-5.5-7-10V6l7-3z" stroke="currentColor" strokeWidth="2" strokeLinejoin="round" />
+      <path d="M9.5 12l1.8 1.8L14.8 10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  ),
+  odp: (
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="5" cy="6" r="2.4" stroke="currentColor" strokeWidth="2" />
+      <circle cx="19" cy="6" r="2.4" stroke="currentColor" strokeWidth="2" />
+      <circle cx="12" cy="18" r="2.4" stroke="currentColor" strokeWidth="2" />
+      <path d="M7 7.2L10.3 16M17 7.2L13.7 16M7.4 6h9.2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+    </svg>
+  ),
+}
+
+function SubjectTile({ subject, onOpen }: { subject: Subject; onOpen: () => void }) {
+  return (
+    <div
+      className={`subject-tile ${subject.available ? '' : 'disabled'}`}
+      style={{ '--tile-accent': subject.accent, '--tile-accent-soft': subject.accentSoft } as CSSProperties}
+    >
+      <span className="subject-tile-mark">{subjectIcons[subject.id]}</span>
+      <span className="subject-tile-copy">
+        <strong>{subject.name}</strong>
+        <span className="subject-tile-meta">{subject.blurb}</span>
+        {!subject.available && <span className="subject-tile-badge">Uskoro</span>}
+      </span>
+      <button className="subject-tile-cta" onClick={onOpen} disabled={!subject.available}>
+        <span>{subject.available ? 'Otvori' : 'Uskoro'}</span>
+        <svg className="subject-tile-cta-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        </svg>
+      </button>
+    </div>
+  )
+}
+
+function SubjectSelector({ onOpenSubject }: { onOpenSubject: (id: string) => void }) {
+  useEffect(() => {
+    document.title = 'FTN — Izbor predmeta'
+  }, [])
+
+  const winter = subjects.filter((subject) => subject.semester === 'zimski')
+  const summer = subjects.filter((subject) => subject.semester === 'letnji')
+
+  return (
+    <div className="subjects-shell">
+      <header className="subjects-header">
+        <span className="brand-mark">F</span>
+        <div><strong>Materijali za predmete</strong><small>Fakultet tehničkih nauka · Novi Sad</small></div>
+      </header>
+
+      <main className="subjects-main">
+        <section className="subjects-section">
+          <h2>Zimski semestar</h2>
+          <div className="subjects-grid">
+            {winter.map((subject) => (
+              <SubjectTile key={subject.id} subject={subject} onOpen={() => onOpenSubject(subject.id)} />
+            ))}
+          </div>
+        </section>
+
+        <section className="subjects-section">
+          <h2>Letnji semestar</h2>
+          <div className="subjects-grid">
+            {summer.map((subject) => (
+              <SubjectTile key={subject.id} subject={subject} onOpen={() => onOpenSubject(subject.id)} />
+            ))}
+          </div>
+        </section>
+      </main>
+
+      <footer className="subjects-footer">
+        <span>© {new Date().getFullYear()} Univerzitet u Novom Sadu — Fakultet tehničkih nauka</span>
+      </footer>
+    </div>
+  )
+}
+
+export default function StaticApp() {
+  const [subject, setSubject] = useState<string | null>(
+    window.location.hash.startsWith('#ers') ? 'ers' : null,
+  )
+
+  const openSubject = (id: string) => {
+    setSubject(id)
+    history.replaceState(null, '', `#${id}`)
+  }
+
+  const backToSubjects = () => {
+    setSubject(null)
+    history.replaceState(null, '', window.location.pathname)
+  }
+
+  if (subject === 'ers') return <ErsCourseApp onBack={backToSubjects} />
+
+  return <SubjectSelector onOpenSubject={openSubject} />
 }

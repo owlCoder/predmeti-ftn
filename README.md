@@ -1,17 +1,18 @@
-# ERS nastavni materijali
+# Materijali za predmete — FTN
 
-Javni statički sajt za predmet **Elementi razvoja softvera** na studijskom programu Primenjeno softversko inženjerstvo, Fakultet tehničkih nauka, Univerzitet u Novom Sadu.
+Javni statički sajt sa nastavnim materijalima za predmete na studijskom programu Primenjeno softversko inženjerstvo, Fakultet tehničkih nauka, Univerzitet u Novom Sadu.
 
-Sajt sadrži:
+Sajt trenutno sadrži:
 
-- **Praktikum 2026/27** — nastavni materijal za vežbe, samostalni rad i projektni rad;
-- **Prezentacije za vežbe** — nastavnički materijal koji prati sadržaj praktikuma.
+- **Elementi razvoja softvera** (zimski semestar) — Praktikum, Prezentacije za vežbe i Kontrolne tačke projekta (P1–P8);
+- **Osnove informacione bezbednosti** (zimski semestar) — Praktikum, Prezentacije za vežbe i Kontrolne tačke projekta (P1–P8);
+- **Osnove distribuiranog programiranja** (letnji semestar) — u pripremi.
 
-Produkcijska verzija je predviđena za GitHub Pages:
+Svaki predmet ima tri prikaza dostupna kroz segmentovanu navigaciju: **Praktikum**, **Prezentacije** i **Kont. tačke**.
 
-**https://owlcoder.github.io/ers-motion-web/**
+Produkcijska verzija:
 
-> Ako GitHub Pages još nije aktiviran za repozitorijum, u **Settings → Pages → Build and deployment** treba jednokratno izabrati **GitHub Actions**. Nakon toga svaki push na `main` automatski gradi i objavljuje sajt.
+**https://predmeti-ftn.vercel.app/**
 
 ## Lokalno pokretanje
 
@@ -47,14 +48,14 @@ npm run build
 npm run preview
 ```
 
-Vite koristi relativni `base`, pa isti `dist/` radi i lokalno i na GitHub Pages adresi projekta (`/ers-motion-web/`).
+Vite koristi relativni `base` lokalno, `/` na Vercel-u, i `/predmeti-ftn/` na GitHub Pages-u, pa isti `dist/` radi u sva tri okruženja.
 
 ## Organizacija sajta
 
 - `src/main.tsx` — minimalna ulazna tačka aplikacije;
-- `src/StaticApp.tsx` — prikaz Praktikuma i Prezentacija;
-- `src/static-site.css` — stilovi za prikaz na ekranu i štampu;
-- `src/content/` — strukturirani nastavni sadržaj;
+- `src/StaticApp.tsx` — selektor predmeta i deljeni `CourseApp` prikaz (Praktikum / Prezentacije / Kontrolne tačke) za svaki predmet;
+- `src/static-site.css`, `src/presentations.css`, `src/checkpoints.css`, `src/ui-refresh.css` — stilovi za prikaz na ekranu i štampu;
+- `src/content/` — strukturirani nastavni sadržaj za ERS (`src/content/*.ts`) i OIB (`src/content/oib/`);
 - `public/course-assets/` — nastavne ilustracije i snimci ekrana iz Tapiz Boards;
 - `public/brand/` — institucionalni logotipi;
 - `.github/workflows/build.yml` — automatska provera izgradnje;
@@ -72,7 +73,15 @@ Dugme **Preuzmi PDF** ne otvara dijalog za štampu. PDF se generiše direktno u 
 
 Dokument se tokom izvoza deli na A4 stranice pre iscrtavanja. Time se izbegavaju ograničenja pregledača kod veoma dugih dokumenata i zadržava se bolja čitljivost slika.
 
-## GitHub Pages
+## Fullscreen i zoom
+
+Praktikum i Prezentacije imaju floating kontrole za uvećanje i prikaz preko celog ekrana. U fullscreen modu prezentacije dinamički skaliraju sadržaj slajda (font, razmak) da popune ceo dostupan prostor, umesto da ostanu vizuelno male.
+
+## Vercel
+
+Produkcijski deploy ide na Vercel (`npx vercel --prod`), sa `predmeti-ftn.vercel.app` kao produkcijskim aliasom.
+
+## GitHub Pages (alternativa)
 
 Tok rada `.github/workflows/pages.yml` pri svakom push-u na `main`:
 
@@ -81,7 +90,7 @@ Tok rada `.github/workflows/pages.yml` pri svakom push-u na `main`:
 3. pakuje `dist/` kao GitHub Pages artefakt;
 4. objavljuje artefakt pomoću zvanične GitHub Pages akcije.
 
-Repozitorijum je javan, pa GitHub Pages može da se koristi i na GitHub Free planu.
+Repozitorijum je javan, pa GitHub Pages može da se koristi i na GitHub Free planu. Ako GitHub Pages još nije aktiviran, u **Settings → Pages → Build and deployment** treba jednokratno izabrati **GitHub Actions**.
 
 ## Sačuvana verzija starog editora
 

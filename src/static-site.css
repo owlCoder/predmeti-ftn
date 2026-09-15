@@ -164,6 +164,9 @@ a { color: inherit; }
 }
 
 .document-layout.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
   width: 100%;
   margin: 0;
   height: 100vh;

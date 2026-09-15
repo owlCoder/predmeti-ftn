@@ -2,7 +2,10 @@ import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactEle
 import type { Block, CourseDocument, DiagramBlock, TextBlock } from './types'
 import { practicum2026 } from './content/canvaPracticum'
 import { presentationDecks, type PresentationDeck } from './content/presentations'
-import { checkpoints } from './content/checkpoints'
+import { checkpoints, type Checkpoint } from './content/checkpoints'
+import { oibPracticum2026 } from './content/oib/oibPracticum'
+import { oibPresentationDecks } from './content/oib/oibPresentations'
+import { oibCheckpoints } from './content/oib/oibCheckpoints'
 import { ACCENTS, highlightCode } from './utils'
 import './static-site.css'
 import './presentations.css'
@@ -252,7 +255,7 @@ function BlockView({ item, onImageOpen }: { item: PreparedBlock; onImageOpen?: (
   return <hr className="doc-divider" />
 }
 
-function DocumentCover() {
+function DocumentCover({ subject }: { subject: string }) {
   return (
     <header className="document-cover">
       <div className="cover-institution">
@@ -265,7 +268,7 @@ function DocumentCover() {
         <img src={assetUrl('/brand/ftn.svg')} alt="FTN" />
       </div>
       <div className="cover-copy">
-        <span className="eyebrow">Elementi razvoja softvera</span>
+        <span className="eyebrow">{subject}</span>
         <h1>Praktikum</h1>
         <p>Radni materijal za vežbe, samostalno ponavljanje i projektni rad.</p>
       </div>
@@ -370,7 +373,7 @@ function StaticDocument({ doc }: { doc: CourseDocument }) {
         <div className="document-scroll">
           <div className="document-zoom-frame" style={{ '--doc-zoom': zoom } as CSSProperties}>
             <main className="document-paper">
-              <DocumentCover />
+              <DocumentCover subject={doc.subject} />
               <article className="document-body">
                 {prepared.map((item, index) => (
                   <BlockView item={item} key={`${item.block.id}-${index}`} onImageOpen={(src, alt) => setOpenImage({ src, alt })} />
@@ -390,62 +393,60 @@ function StaticDocument({ doc }: { doc: CourseDocument }) {
   )
 }
 
-function CheckpointsView() {
+function CheckpointsView({ checkpoints }: { checkpoints: Checkpoint[] }) {
   const [activeId, setActiveId] = useState(checkpoints[0].id)
   const active = checkpoints.find((item) => item.id === activeId) || checkpoints[0]
+  const activeIndex = checkpoints.findIndex((item) => item.id === active.id)
 
   return (
     <main className="checkpoints-shell">
       <div className="checkpoints-topline">
         <h1>Kontrolne tačke</h1>
-        <p>Pregled projektnih kontrolnih tačaka P1–P8 kroz semestar.</p>
+        <p>Pregled projektnih kontrolnih tačaka kroz semestar.</p>
       </div>
 
-      <section className="checkpoints-grid">
-        <aside className="checkpoint-list" aria-label="Kontrolne tačke">
-          {checkpoints.map((item) => (
+      <ol className="checkpoint-timeline" aria-label="Kontrolne tačke">
+        {checkpoints.map((item, index) => (
+          <li key={item.id} className={index <= activeIndex ? 'is-reached' : ''}>
             <button
-              className={`checkpoint-tab ${item.id === active.id ? 'active' : ''}`}
-              key={item.id}
+              className={`checkpoint-node ${item.id === active.id ? 'active' : ''}`}
               onClick={() => setActiveId(item.id)}
             >
-              <span className="checkpoint-tab-code">{item.code}</span>
-              <span className="checkpoint-tab-copy">
-                <strong>{item.title}</strong>
-                <span>{item.exercise}</span>
-              </span>
+              <span className="checkpoint-node-dot">{item.code}</span>
+              <span className="checkpoint-node-date">{item.date}</span>
+              <span className="checkpoint-node-title">{item.title}</span>
             </button>
-          ))}
-        </aside>
+          </li>
+        ))}
+      </ol>
 
-        <section className="checkpoint-stage">
-          <article className="checkpoint-canvas" key={active.id}>
-            <div className="checkpoint-toolbar">
-              <span className="checkpoint-badge">{active.code}</span>
-              <div className="checkpoint-toolbar-title">
-                <strong>{active.title}</strong>
-                <span>{active.exercise}</span>
-              </div>
+      <section className="checkpoint-stage">
+        <article className="checkpoint-canvas" key={active.id}>
+          <div className="checkpoint-toolbar">
+            <span className="checkpoint-badge">{active.code}</span>
+            <div className="checkpoint-toolbar-title">
+              <strong>{active.title}</strong>
+              <span>{active.exercise} · nedelja od {active.date}</span>
             </div>
+          </div>
 
-            <p className="checkpoint-summary">{active.summary}</p>
-            <h3>Šta treba uraditi</h3>
-            <ul className="checkpoint-items">
-              {active.items.map((item, index) => (
-                <li key={item}>
-                  <span className="checkpoint-item-index">{index + 1}</span>
-                  <span>{item}</span>
-                </li>
-              ))}
-            </ul>
-          </article>
-        </section>
+          <p className="checkpoint-summary">{active.summary}</p>
+          <h3>Šta treba uraditi</h3>
+          <ul className="checkpoint-items">
+            {active.items.map((item, index) => (
+              <li key={item}>
+                <span className="checkpoint-item-index">{index + 1}</span>
+                <span>{item}</span>
+              </li>
+            ))}
+          </ul>
+        </article>
       </section>
     </main>
   )
 }
 
-function PresentationsView() {
+function PresentationsView({ presentationDecks }: { presentationDecks: PresentationDeck[] }) {
   const [deckId, setDeckId] = useState(presentationDecks[0].id)
   const [slideIndex, setSlideIndex] = useState(0)
   const [isFullscreen, setIsFullscreen] = useState(false)
@@ -594,26 +595,40 @@ function PresentationsView() {
   )
 }
 
-function ErsCourseApp({ onBack }: { onBack: () => void }) {
-  const initial: ActiveKey = window.location.hash.startsWith('#ers/prezentacije')
+type CourseAppProps = {
+  onBack: () => void
+  hashPrefix: string
+  brandInitial: string
+  brandAccent?: string
+  brandShadow?: string
+  courseName: string
+  academicYear: string
+  titlePrefix: string
+  doc: CourseDocument
+  presentationDecks: PresentationDeck[]
+  checkpoints: Checkpoint[]
+}
+
+function CourseApp({ onBack, hashPrefix, brandInitial, brandAccent, brandShadow, courseName, academicYear, titlePrefix, doc, presentationDecks, checkpoints }: CourseAppProps) {
+  const initial: ActiveKey = window.location.hash.startsWith(`#${hashPrefix}/prezentacije`)
     ? 'prezentacije'
-    : window.location.hash.startsWith('#ers/kontrolne-tacke')
+    : window.location.hash.startsWith(`#${hashPrefix}/kontrolne-tacke`)
       ? 'kontrolne-tacke'
       : 'praktikum'
   const [active, setActive] = useState<ActiveKey>(initial)
 
   useEffect(() => {
     const titles: Record<ActiveKey, string> = {
-      praktikum: 'ERS — Praktikum',
-      prezentacije: 'ERS — Prezentacije',
-      'kontrolne-tacke': 'ERS — Kontrolne tačke',
+      praktikum: `${titlePrefix} — Praktikum`,
+      prezentacije: `${titlePrefix} — Prezentacije`,
+      'kontrolne-tacke': `${titlePrefix} — Kontrolne tačke`,
     }
     document.title = titles[active]
-  }, [active])
+  }, [active, titlePrefix])
 
   const choose = (key: ActiveKey) => {
     setActive(key)
-    history.replaceState(null, '', `#ers/${key}`)
+    history.replaceState(null, '', `#${hashPrefix}/${key}`)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
@@ -621,8 +636,13 @@ function ErsCourseApp({ onBack }: { onBack: () => void }) {
     <div className="site-shell">
       <header className="site-header">
         <button className="site-brand" onClick={onBack}>
-          <span className="brand-mark">E</span>
-          <span><strong>Elementi razvoja softvera</strong><small>2026/2027</small></span>
+          <span
+            className="brand-mark"
+            style={{ '--brand-accent': brandAccent, '--brand-shadow': brandShadow } as CSSProperties}
+          >
+            {brandInitial}
+          </span>
+          <span><strong>{courseName}</strong><small>{academicYear}</small></span>
         </button>
         <nav className="document-switcher" aria-label="Dokumenti">
           <button className={active === 'praktikum' ? 'active' : ''} onClick={() => choose('praktikum')}>
@@ -648,7 +668,13 @@ function ErsCourseApp({ onBack }: { onBack: () => void }) {
         </nav>
       </header>
       <div className="tab-panel" key={active}>
-        {active === 'prezentacije' ? <PresentationsView /> : active === 'kontrolne-tacke' ? <CheckpointsView /> : <StaticDocument doc={practicum2026} />}
+        {active === 'prezentacije' ? (
+          <PresentationsView presentationDecks={presentationDecks} />
+        ) : active === 'kontrolne-tacke' ? (
+          <CheckpointsView checkpoints={checkpoints} />
+        ) : (
+          <StaticDocument doc={doc} />
+        )}
       </div>
     </div>
   )
@@ -678,8 +704,8 @@ const subjects: Subject[] = [
     id: 'oib',
     name: 'Osnove informacione bezbednosti',
     semester: 'zimski',
-    available: false,
-    blurb: 'Materijal se priprema.',
+    available: true,
+    blurb: 'Praktikum, prezentacije za vežbe i kontrolne tačke projektnog rada iz informacione bezbednosti.',
     accent: 'linear-gradient(145deg, #dc2626 0%, #b91c1c 48%, #7f1d1d 100%)',
     accentSoft: 'rgba(220,38,38,.14)',
   },
@@ -782,7 +808,7 @@ function SubjectSelector({ onOpenSubject }: { onOpenSubject: (id: string) => voi
 
 export default function StaticApp() {
   const [subject, setSubject] = useState<string | null>(
-    window.location.hash.startsWith('#ers') ? 'ers' : null,
+    window.location.hash.startsWith('#ers') ? 'ers' : window.location.hash.startsWith('#oib') ? 'oib' : null,
   )
 
   const openSubject = (id: string) => {
@@ -795,7 +821,39 @@ export default function StaticApp() {
     history.replaceState(null, '', window.location.pathname)
   }
 
-  if (subject === 'ers') return <ErsCourseApp onBack={backToSubjects} />
+  if (subject === 'ers') {
+    return (
+      <CourseApp
+        onBack={backToSubjects}
+        hashPrefix="ers"
+        brandInitial="E"
+        courseName="Elementi razvoja softvera"
+        academicYear="2026/2027"
+        titlePrefix="ERS"
+        doc={practicum2026}
+        presentationDecks={presentationDecks}
+        checkpoints={checkpoints}
+      />
+    )
+  }
+
+  if (subject === 'oib') {
+    return (
+      <CourseApp
+        onBack={backToSubjects}
+        hashPrefix="oib"
+        brandInitial="S"
+        brandAccent="linear-gradient(145deg, #dc2626 0%, #b91c1c 48%, #7f1d1d 100%)"
+        brandShadow="rgba(220,38,38,.20)"
+        courseName="Osnove informacione bezbednosti"
+        academicYear="2026/2027"
+        titlePrefix="OIB"
+        doc={oibPracticum2026}
+        presentationDecks={oibPresentationDecks}
+        checkpoints={oibCheckpoints}
+      />
+    )
+  }
 
   return <SubjectSelector onOpenSubject={openSubject} />
 }

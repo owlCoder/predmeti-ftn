@@ -11,7 +11,7 @@ export default defineConfig({
   // Vercel serves the app from the domain root, while GitHub Pages serves it
   // from the repository subdirectory. Relative paths keep local development
   // portable without changing the public document and asset content.
-  base: isVercel ? '/' : isGitHubActions ? '/ers-motion-web/' : './',
+  base: isVercel ? '/' : isGitHubActions ? '/predmeti-ftn/' : './',
   plugins: [react()],
   server: { port: 5600 },
 })

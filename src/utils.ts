@@ -67,8 +67,8 @@ function createTokenStash(): TokenStash {
 function tokeniseCSharp(code: string) {
   let x = esc(code)
   const stash = createTokenStash()
-  x = x.replace(/(&quot;|\")[\s\S]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
   x = x.replace(/\/\/.*$/gm, (m) => stash.keep(`<span class="tok-comment">${m}</span>`))
+  x = x.replace(/(&quot;|\")[^\n]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
   x = x.replace(/\b(public|private|protected|internal|sealed|static|readonly|class|record|interface|namespace|using|new|return|if|else|for|foreach|while|switch|case|break|continue|throw|try|catch|finally|async|await|var|void|bool|int|long|decimal|double|string|object|null|true|false|this|base|override|virtual|abstract|in|out|ref|where|get|set|init)\b/g, '<span class="tok-keyword">$1</span>')
   x = x.replace(/\b([A-Z][A-Za-z0-9_]*)\b/g, '<span class="tok-type">$1</span>')
   x = x.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-number">$1</span>')
@@ -79,7 +79,7 @@ function tokeniseBash(code: string) {
   let x = esc(code)
   const stash = createTokenStash()
   x = x.replace(/#.*$/gm, (m) => stash.keep(`<span class="tok-comment">${m}</span>`))
-  x = x.replace(/(&quot;|\")[\s\S]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
+  x = x.replace(/(&quot;|\")[^\n]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
   x = x.replace(/(^|\s)(--?[a-zA-Z0-9][a-zA-Z0-9-]*)/gm, (_, prefix: string, flag: string) => `${prefix}${stash.keep(`<span class="tok-attr">${flag}</span>`)}`)
   x = x.replace(/\b(git|dotnet|npm|npx|cd|mkdir|rm|cp|mv|echo|cat|grep|find|curl|export|set|docker|node)\b/g, (m) => stash.keep(`<span class="tok-keyword">${m}</span>`))
   return stash.restore(x)
@@ -106,8 +106,8 @@ function tokeniseMarkdown(code: string) {
 function tokeniseTs(code: string) {
   let x = esc(code)
   const stash = createTokenStash()
-  x = x.replace(/(&quot;|\")[\s\S]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
   x = x.replace(/\/\/.*$/gm, (m) => stash.keep(`<span class="tok-comment">${m}</span>`))
+  x = x.replace(/(&quot;|\")[^\n]*?(&quot;|\")/g, (m) => stash.keep(`<span class="tok-string">${m}</span>`))
   x = x.replace(/\b(const|let|var|function|type|interface|class|import|from|export|default|extends|implements|public|private|protected|readonly|new|return|if|else|for|of|while|switch|case|break|continue|throw|try|catch|finally|async|await|void|boolean|number|string|object|null|undefined|true|false|this|in|keyof|typeof|as)\b/g, '<span class="tok-keyword">$1</span>')
   x = x.replace(/\b([A-Z][A-Za-z0-9_]*)\b/g, '<span class="tok-type">$1</span>')
   x = x.replace(/\b(\d+(?:\.\d+)?)\b/g, '<span class="tok-number">$1</span>')

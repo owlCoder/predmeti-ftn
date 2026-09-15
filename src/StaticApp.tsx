@@ -2,11 +2,13 @@ import { useEffect, useMemo, useState, type CSSProperties } from 'react'
 import type { Block, CourseDocument, DiagramBlock, TextBlock } from './types'
 import { practicum2026 } from './content/canvaPracticum'
 import { presentationDecks, type PresentationDeck } from './content/presentations'
+import { checkpoints } from './content/checkpoints'
 import { ACCENTS, highlightCode } from './utils'
 import './static-site.css'
 import './presentations.css'
+import './checkpoints.css'
 
-type ActiveKey = 'praktikum' | 'prezentacije'
+type ActiveKey = 'praktikum' | 'prezentacije' | 'kontrolne-tacke'
 type ArtifactKind = 'figure' | 'listing' | 'table'
 
 type PreparedBlock = {
@@ -284,6 +286,61 @@ function StaticDocument({ doc }: { doc: CourseDocument }) {
   )
 }
 
+function CheckpointsView() {
+  const [activeId, setActiveId] = useState(checkpoints[0].id)
+  const active = checkpoints.find((item) => item.id === activeId) || checkpoints[0]
+
+  return (
+    <main className="checkpoints-shell">
+      <div className="checkpoints-topline">
+        <h1>Kontrolne tačke</h1>
+        <p>Pregled projektnih kontrolnih tačaka P1–P8 kroz semestar.</p>
+      </div>
+
+      <section className="checkpoints-grid">
+        <aside className="checkpoint-list" aria-label="Kontrolne tačke">
+          {checkpoints.map((item) => (
+            <button
+              className={`checkpoint-tab ${item.id === active.id ? 'active' : ''}`}
+              key={item.id}
+              onClick={() => setActiveId(item.id)}
+            >
+              <span className="checkpoint-tab-code">{item.code}</span>
+              <span className="checkpoint-tab-copy">
+                <strong>{item.title}</strong>
+                <span>{item.exercise}</span>
+              </span>
+            </button>
+          ))}
+        </aside>
+
+        <section className="checkpoint-stage">
+          <article className="checkpoint-canvas" key={active.id}>
+            <div className="checkpoint-toolbar">
+              <span className="checkpoint-badge">{active.code}</span>
+              <div className="checkpoint-toolbar-title">
+                <strong>{active.title}</strong>
+                <span>{active.exercise}</span>
+              </div>
+            </div>
+
+            <p className="checkpoint-summary">{active.summary}</p>
+            <h3>Šta treba uraditi</h3>
+            <ul className="checkpoint-items">
+              {active.items.map((item, index) => (
+                <li key={item}>
+                  <span className="checkpoint-item-index">{index + 1}</span>
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </article>
+        </section>
+      </section>
+    </main>
+  )
+}
+
 function PresentationsView() {
   const [deckId, setDeckId] = useState(presentationDecks[0].id)
   const [slideIndex, setSlideIndex] = useState(0)
@@ -338,7 +395,7 @@ function PresentationsView() {
             </div>
           </div>
 
-          <article className="slide-canvas" aria-live="polite">
+          <article className="slide-canvas" aria-live="polite" key={`${deck.id}-${slideIndex}`}>
             <span className="slide-kicker">Vežba {deck.exercise}</span>
             <h2>{slide.title}</h2>
             {slide.lead && <p className="slide-lead">{slide.lead}</p>}
@@ -366,11 +423,20 @@ function PresentationsView() {
 }
 
 export default function StaticApp() {
-  const initial: ActiveKey = window.location.hash.startsWith('#prezentacije') ? 'prezentacije' : 'praktikum'
+  const initial: ActiveKey = window.location.hash.startsWith('#prezentacije')
+    ? 'prezentacije'
+    : window.location.hash.startsWith('#kontrolne-tacke')
+      ? 'kontrolne-tacke'
+      : 'praktikum'
   const [active, setActive] = useState<ActiveKey>(initial)
 
   useEffect(() => {
-    document.title = active === 'prezentacije' ? 'ERS — Prezentacije' : 'ERS — Praktikum'
+    const titles: Record<ActiveKey, string> = {
+      praktikum: 'ERS — Praktikum',
+      prezentacije: 'ERS — Prezentacije',
+      'kontrolne-tacke': 'ERS — Kontrolne tačke',
+    }
+    document.title = titles[active]
   }, [active])
 
   const choose = (key: ActiveKey) => {
@@ -389,9 +455,12 @@ export default function StaticApp() {
         <nav className="document-switcher" aria-label="Dokumenti">
           <button className={active === 'praktikum' ? 'active' : ''} onClick={() => choose('praktikum')}>Praktikum</button>
           <button className={active === 'prezentacije' ? 'active' : ''} onClick={() => choose('prezentacije')}>Prezentacije</button>
+          <button className={active === 'kontrolne-tacke' ? 'active' : ''} onClick={() => choose('kontrolne-tacke')}>Kont. tačke</button>
         </nav>
       </header>
-      {active === 'prezentacije' ? <PresentationsView /> : <StaticDocument doc={practicum2026} />}
+      <div className="tab-panel" key={active}>
+        {active === 'prezentacije' ? <PresentationsView /> : active === 'kontrolne-tacke' ? <CheckpointsView /> : <StaticDocument doc={practicum2026} />}
+      </div>
     </div>
   )
 }

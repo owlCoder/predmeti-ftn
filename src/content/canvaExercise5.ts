@@ -13,6 +13,7 @@ export const exercise5 = (): DocumentPage[] => [
       ['Rezultat', 'eksplicitan ishod za klijenta', 'emerald'],
     ], 'Use-case povezuje poslovni zahtev sa domenskim ponašanjem i jasno definisanim ishodom.'),
     callout('info', 'Studija slučaja: ECommerce', 'Primer ECommerce razdvaja Domain, podatke i repozitorijume, Application i implementaciju poslovnih servisa. Upiti i komande pripadaju aplikacionom sloju, dok konkretna baza podataka ili spoljni web servis ostaju infrastrukturni detalji.'),
+    callout('success', 'Rešenje za preuzimanje', 'Kompletno rešenje studije slučaja dostupno je kao <a href="./E-Commerce.zip" download>ECommerce ZIP</a>.'),
   ]),
   page('5.1. Entiteti, invarijante i ponašanje', [
     text('h2', '5.1. Entitet nije samo DTO'),

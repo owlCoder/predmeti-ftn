@@ -96,6 +96,7 @@ export const exercise4 = (): DocumentPage[] => [
     ]),
     code('csharp', `public interface IZapisiServis\n{\n    Result<ZapisNaSajtu> Objavi(ZapisNaSajtu zapis);\n    Result<IReadOnlyList<ZapisNaSajtu>> PregledZapisa();\n}\n\npublic interface IBazaPodataka\n{\n    TabeleBazaPodataka Tabele { get; }\n    bool SacuvajPromene();\n}`, 'Ugovori poslovnog jezgra'),
     callout('info', 'Ključna ideja', 'Način čuvanja podataka i način logovanja mogu da se promene bez izmene centralnog poslovnog toka. Ista ideja se prenosi u studentski projekat, ali tim bira sopstvene granice i nazive u skladu sa domenom.'),
+    callout('success', 'Rešenje za preuzimanje', 'Kompletno rešenje studije slučaja dostupno je kao <a href="./Logger-Bloger.zip" download>Logger–Blogger ZIP</a>. Pre pokretanja pročitati `README.md` iz arhive.'),
   ]),
 
   page('4.7. Composition root i projektna kontrolna tačka P2', [

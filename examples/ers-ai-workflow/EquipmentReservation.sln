@@ -16,6 +16,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Guardr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.Tests", "tests\EquipmentReservation.Tests\EquipmentReservation.Tests.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE007}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "EquipmentReservation.ConsoleUi", "src\EquipmentReservation.ConsoleUi\EquipmentReservation.ConsoleUi.csproj", "{9CFDB201-2B65-47F0-8FD2-43F6419AE008}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -50,5 +52,9 @@ Global
 		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CFDB201-2B65-47F0-8FD2-43F6419AE007}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CFDB201-2B65-47F0-8FD2-43F6419AE008}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

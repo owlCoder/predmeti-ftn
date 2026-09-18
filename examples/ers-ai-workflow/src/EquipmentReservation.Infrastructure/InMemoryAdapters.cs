@@ -25,7 +25,7 @@ public sealed class InMemoryReservationRepository : IReservationRepository
     }
 }
 
-public sealed class InMemoryInventoryModule : IInventoryModule
+public sealed class InMemoryInventoryModule : IInventoryModule, IInventoryReadModel
 {
     private readonly ConcurrentDictionary<Guid, InventorySlot> _slots = new();
 
@@ -45,6 +45,19 @@ public sealed class InMemoryInventoryModule : IInventoryModule
         {
             var result = slot.Item.Reserve(request.Quantity);
             return Task.FromResult(new ReserveInventoryResult(result.Success, result.ErrorCode));
+        }
+    }
+
+    public Task<int?> GetAvailableAsync(Guid equipmentId, CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        if (!_slots.TryGetValue(equipmentId, out var slot))
+            return Task.FromResult<int?>(null);
+
+        lock (slot.SyncRoot)
+        {
+            return Task.FromResult<int?>(slot.Item.Available);
         }
     }
 

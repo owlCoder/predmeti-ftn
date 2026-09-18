@@ -12,6 +12,11 @@ public interface IInventoryModule
         CancellationToken cancellationToken);
 }
 
+public interface IInventoryReadModel
+{
+    Task<int?> GetAvailableAsync(Guid equipmentId, CancellationToken cancellationToken);
+}
+
 public interface IReservationRepository
 {
     Task<Reservation?> FindByRequestIdAsync(Guid requestId, CancellationToken cancellationToken);

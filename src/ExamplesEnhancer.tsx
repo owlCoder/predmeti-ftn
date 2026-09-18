@@ -17,6 +17,7 @@ type LessonExamples = {
   number: number
   title: string
   summary: string
+  zip: string
   entries: ExampleEntry[]
 }
 
@@ -25,6 +26,7 @@ const lessons: LessonExamples[] = [
     number: 5,
     title: 'Integracija modula, ugovori i podaci',
     summary: 'Clean Architecture osnova: domen, use-case, portovi, adapteri, composition root i idempotentnost.',
+    zip: 'vezba-5-integracija-modula.zip',
     entries: [
       { path: 'EquipmentReservation.sln', note: 'Glavni solution za ceo primer', kind: 'solution' },
       { path: 'src/EquipmentReservation.Domain/', note: 'Entiteti i poslovna pravila', kind: 'code' },
@@ -38,6 +40,7 @@ const lessons: LessonExamples[] = [
     number: 6,
     title: 'Kontrolisan razvoj uz AI',
     summary: 'Stabilne instrukcije, trag korišćenja, ponovljiva procedura i odvojene agentske uloge.',
+    zip: 'vezba-6-ai-workflow.zip',
     entries: [
       { path: '.ai/AI_INSTRUCTIONS.md', note: 'Projektna pravila za AI razvoj', kind: 'config' },
       { path: '.ai/AI_USAGE.md', note: 'Evidencija odluka i provere', kind: 'config' },
@@ -50,6 +53,7 @@ const lessons: LessonExamples[] = [
     number: 7,
     title: 'MCP: povezivanje agenata sa projektom',
     summary: 'Kontrolisan pristup projektnoj dokumentaciji, strukturi, diff-u i stvarnom rezultatu testova.',
+    zip: 'vezba-7-mcp.zip',
     entries: [
       { path: 'src/EquipmentReservation.Mcp/Program.cs', note: 'MCP host i composition root', kind: 'code' },
       { path: 'src/EquipmentReservation.Mcp/ProjectPrimitives.cs', note: 'Resources i tools', kind: 'code' },
@@ -61,6 +65,7 @@ const lessons: LessonExamples[] = [
     number: 8,
     title: 'Hooks, guardrails i evaluacije',
     summary: 'Determinističke zabrane oko agentskog toka i evaluacioni scenariji za regresiju i bezbednost.',
+    zip: 'vezba-8-guardrails-evals.zip',
     entries: [
       { path: 'src/EquipmentReservation.Guardrails/Guardrails.cs', note: 'IToolGuardrail politike i evaluator', kind: 'code' },
       { path: 'src/EquipmentReservation.Guardrails/Program.cs', note: 'Izvršivi hook adapter', kind: 'code' },
@@ -111,8 +116,8 @@ function ExamplesView() {
           <span className="eyebrow">Izvršivi nastavni primer</span>
           <h1>Primeri za vežbe</h1>
           <p>
-            Vežbe 5–8 koriste isti <strong>EquipmentReservation</strong> projekat. Tree ispod pokazuje
-            tačno koji deo primera pripada kojoj lekciji, bez traženja kroz ceo praktikum.
+            Vežbe 5–8 koriste isti <strong>EquipmentReservation</strong> projekat. Možeš preuzeti ceo paket ili
+            poseban samostalni ZIP za bilo koju vežbu, bez traženja kroz ceo praktikum.
           </p>
         </div>
         <a className="examples-download-primary" href={zipUrl} download>
@@ -128,41 +133,51 @@ function ExamplesView() {
             <strong>EquipmentReservation</strong>
             <span>Jedan solution koji se nadograđuje kroz četiri vežbe</span>
           </div>
-          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> ZIP</a>
+          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> Svi ZIP</a>
         </div>
 
         <div className="examples-tree" role="tree" aria-label="Primeri po vežbama">
-          {lessons.map((lesson, index) => (
-            <details className="examples-lesson" key={lesson.number} open={index === 0}>
-              <summary>
-                <span className="tree-branch" aria-hidden="true" />
-                <span className="examples-folder-icon small"><FolderIcon /></span>
-                <span className="lesson-copy">
-                  <strong>Vežba {lesson.number}</strong>
-                  <span>{lesson.title}</span>
-                </span>
-                <span className="lesson-count">{lesson.entries.length} stavki</span>
-              </summary>
-              <div className="lesson-body">
-                <p>{lesson.summary}</p>
-                <ul className="example-file-list">
-                  {lesson.entries.map((entry) => (
-                    <li key={`${lesson.number}-${entry.path}`}>
-                      <span className={`example-kind kind-${entry.kind}`}>{kindLabels[entry.kind]}</span>
-                      <code>{entry.path}</code>
-                      <span>{entry.note}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </details>
-          ))}
+          {lessons.map((lesson, index) => {
+            const lessonZipUrl = publicAsset(`/downloads/${lesson.zip}`)
+            return (
+              <details className="examples-lesson" key={lesson.number} open={index === 0}>
+                <summary>
+                  <span className="tree-branch" aria-hidden="true" />
+                  <span className="examples-folder-icon small"><FolderIcon /></span>
+                  <span className="lesson-copy">
+                    <strong>Vežba {lesson.number}</strong>
+                    <span>{lesson.title}</span>
+                  </span>
+                  <span className="lesson-count">{lesson.entries.length} stavki</span>
+                </summary>
+                <a className="lesson-download" href={lessonZipUrl} download onClick={(event) => event.stopPropagation()}>
+                  <DownloadIcon />
+                  <span>ZIP V{lesson.number}</span>
+                </a>
+                <div className="lesson-body">
+                  <div className="lesson-body-heading">
+                    <p>{lesson.summary}</p>
+                    <a href={lessonZipUrl} download className="lesson-download-secondary"><DownloadIcon /> Preuzmi Vežbu {lesson.number}</a>
+                  </div>
+                  <ul className="example-file-list">
+                    {lesson.entries.map((entry) => (
+                      <li key={`${lesson.number}-${entry.path}`}>
+                        <span className={`example-kind kind-${entry.kind}`}>{kindLabels[entry.kind]}</span>
+                        <code>{entry.path}</code>
+                        <span>{entry.note}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </details>
+            )
+          })}
         </div>
       </section>
 
       <section className="examples-footer-note">
         <strong>Kako koristiti primer</strong>
-        <span>Raspakuj ZIP, otvori <code>EquipmentReservation.sln</code>, pa za konkretnu vežbu prati odgovarajuću granu tree-a iznad.</span>
+        <span>Svaki pojedinačni ZIP sadrži ceo <code>EquipmentReservation.sln</code> i <code>LEKCIJA.md</code> sa fokusom te vežbe. Za kompletan kurs koristi „Preuzmi sve primere“.</span>
       </section>
     </main>
   )

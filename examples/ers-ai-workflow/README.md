@@ -127,6 +127,10 @@ Testovi pokrivaju:
 - blokiranje destruktivnih komandi;
 - blokiranje pristupa `.env` datoteci.
 
+### NUnit 4 napomena
+
+Primer koristi NUnit 4. Za grupisane provere koristi se `using (Assert.EnterMultipleScope())` umesto `Assert.Multiple(() => ...)`, čime se izbegava dvosmislen izbor između `TestDelegate` i `Action` overload-a u novijim NUnit verzijama.
+
 ## SOLID mapa
 
 | Princip | Primer |

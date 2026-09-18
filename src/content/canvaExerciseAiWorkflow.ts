@@ -2,107 +2,131 @@ import type { DocumentPage } from '../types'
 import { text, list, callout, code, table, diagram, page } from './canvaPracticumShared'
 
 export const exerciseAiWorkflow = (): DocumentPage[] => [
-  page('Vežba 6 — Kontrolisan razvoj uz AI: kontekst, instrukcije, procedure i agenti', [
+  page('Vežba 6 — Kontrolisan AI workflow nad istim solution-om', [
     text('h1', 'Vežba 6 — Kontrolisan razvoj uz AI: kontekst, instrukcije, procedure i agenti'),
-    text('paragraph', 'AI alat u okviru projekta ne posmatra se kao zamena za razvojni proces, već kao deo razvojnog okruženja koji mora imati jasna pravila, ograničen kontekst i nezavisnu proveru rezultata. Ova vežba povezuje četiri nivoa rada: konkretan zadatak, stabilne projektne instrukcije, ponovljive procedure i specijalizovane agentske uloge.'),
-    diagram('Od zadatka do proverene promene', [
+    text('paragraph', 'AI se uvodi tek nakon što postoji razumljivo i testirano jezgro iz Vežbe 5. I dalje radimo nad <code>examples/ers-ai-workflow/EquipmentReservation.sln</code>. Cilj nije da AI zameni arhitekturu, nego da radi unutar njenih granica i da svaki rezultat ostane proverljiv standardnim razvojnim signalima.'),
+    diagram('Kontrolisan tok nad EquipmentReservation solution-om', [
       ['Zadatak', 'jasan cilj i kriterijumi', 'slate'],
-      ['Kontekst', 'relevantan kod, odluke i testovi', 'cyan'],
-      ['Instrukcije', 'stabilna projektna pravila', 'blue'],
-      ['Procedura ili agent', 'ograničen tok rada', 'violet'],
-      ['Provera', 'testovi, diff i stručni pregled', 'emerald'],
-    ], 'Kvalitet rada zavisi od granica i provere, a ne od količine teksta prosleđenog modelu.'),
-  ]),
-
-  page('6.1. Od nejasnog upita do inženjerskog zadatka', [
-    text('h2', '6.1. Od nejasnog upita do inženjerskog zadatka'),
-    text('paragraph', 'Neodređen zahtev poput „dodaj popust“ ostavlja previše prostora za nagađanje. Inženjerski zadatak treba da navede cilj, poslovno pravilo, relevantna ograničenja, očekivani izlaz i način provere. Kada se od modela najpre traži analiza i plan, tim može da koriguje smer pre nego što nastane veliki diff.'),
-    code('markdown', `# Zadatak\nAnaliziraj stavku PREMIUM-42. Ne menjaj kod.\n\n# Poslovno pravilo\nPremium korisnik može dobiti kupon, ali kupon ne može da se kombinuje sa sezonskim popustom.\n\n# Ograničenja\n- Poslovna pravila ostaju u Domain/Application sloju.\n- Controller ne sadrži poslovnu logiku.\n- Postojeći testovi moraju ostati uspešni.\n\n# Vrati\n1. pogođene komponente,\n2. otvorena pitanja,\n3. plan izmene,\n4. test scenarije,\n5. rizike i način provere.`, 'Primer zadatka za analizu pre izmene koda'),
-    list([
-      'Kontekst treba da bude relevantan za odluku; veća količina teksta ne znači automatski bolji rezultat.',
-      'Nejasne poslovne pretpostavke treba eksplicitno označiti kao otvorena pitanja.',
-      'Plan treba da bude dovoljno mali da se može pregledati pre implementacije.',
-      'Način provere mora biti određen pre nego što se promena proglasi završenom.',
+      ['Kontekst', 'relevantni projekti i testovi', 'cyan'],
+      ['Instrukcije', '.ai/AI_INSTRUCTIONS.md', 'blue'],
+      ['Skill / agent', 'ograničena procedura i dozvole', 'violet'],
+      ['Provera', 'build, test i git diff', 'emerald'],
     ]),
   ]),
 
-  page('6.2. Projektne instrukcije i evidencija korišćenja', [
-    text('h2', '6.2. Projektne instrukcije i evidencija korišćenja'),
-    text('paragraph', 'Projektne instrukcije sadrže stabilna pravila koja treba da važe kroz veći broj zadataka. One nisu dnevnik prethodnih razgovora. Dobar dokument je kratak, konkretan i usmeren na arhitekturu, programske konvencije, bezbednosna ograničenja i obavezne korake provere.'),
-    code('markdown', `# AI_INSTRUCTIONS.md\n\n## Arhitektura\n- Domain ne zavisi od Infrastructure ili Presentation sloja.\n- Poslovna pravila pripadaju Domain/Application sloju.\n- Spoljne zavisnosti uvode se kroz ugovore i composition root.\n\n## Pre izmene\n1. Pročitaj stavku i relevantne testove.\n2. Odredi pogođene slojeve i module.\n3. Predloži kratak plan i rizike.\n4. Navedi kako će rezultat biti proveren.\n\n## Provera\n- Pokreni ciljane testove, zatim kompletan skup kada je praktično.\n- Pregledaj konačan diff i prijavi nepovezane izmene.`),
-    text('paragraph', '`AI_USAGE.md` predstavlja sažetu evidenciju značajnih korišćenja AI alata. Nije potrebno čuvati potpuni transkript. Potrebno je zabeležiti zadatak, relevantan kontekst, sažetak predloga, odluku tima i nezavisan dokaz provere.'),
-    table(['Polje', 'Sadržaj'], [
-      ['Zadatak', 'Koji problem ili stavka je obrađena.'],
-      ['Kontekst', 'Koji kod, dokumenti i testovi su korišćeni.'],
-      ['Predlog', 'Sažetak relevantnog rezultata modela.'],
-      ['Odluka', 'Šta je prihvaćeno, promenjeno ili odbačeno i zbog čega.'],
-      ['Provera', 'Testovi, build, diff, ručna provera ili drugi nezavisan signal.'],
+  page('6.1. Od nejasnog zahteva do proverljivog zadatka', [
+    text('h2', '6.1. Od nejasnog zahteva do proverljivog zadatka'),
+    text('paragraph', 'Umesto upita „sredi rezervacije“, zadatak treba da kaže koje ponašanje menjamo, koje slojeve ne smemo da narušimo i kako dokazujemo rezultat.'),
+    code('markdown', `# Zadatak
+Analiziraj promenu: jedna rezervacija ne sme tražiti više od 5 komada opreme.
+Ne menjaj kod u ovoj fazi.
+
+# Ograničenja
+- Poslovno pravilo mora ostati u Domain/Application delu.
+- API ne sme sadržati poslovnu odluku.
+- IInventoryModule ugovor menjaj samo ako je zaista potrebno.
+- Postojeći testovi moraju ostati uspešni.
+
+# Vrati
+1. pogođene fajlove i slojeve,
+2. pretpostavke i rizike,
+3. minimalni plan izmene,
+4. test scenarije,
+5. komande za proveru solution-a.`, 'Primer zadatka vezan za konkretan EquipmentReservation kod'),
+    callout('note', 'Prvo analiza, zatim izmena', 'Veliki diff nastao iz nejasnog upita je teško pregledati. Plan se pregleda pre nego što agent dobije dozvolu za pisanje.'),
+  ]),
+
+  page('6.2. Projektne instrukcije su verzionisana pravila', [
+    text('h2', '6.2. Projektne instrukcije su verzionisana pravila'),
+    text('paragraph', 'Gotov primer sadrži <code>.ai/AI_INSTRUCTIONS.md</code>. Njegova pravila su konkretna za arhitekturu ovog solution-a i mogu se proveriti čitanjem project reference-a i pokretanjem testova.'),
+    code('markdown', `## Arhitektura
+- Domain ne zavisi ni od jednog drugog projekta.
+- Application zavisi samo od Domain i definiše portove.
+- Infrastructure implementira portove iz Application sloja.
+- Api je composition root; ne sadrži poslovna pravila.
+- MCP i guardrails su razvojni alati i ne smeju postati zavisnost poslovnog jezgra.
+
+## Posle izmene
+1. Pokreni ciljane testove.
+2. Pokreni kompletan test projekat kada je praktično.
+3. Pregledaj git diff i ukloni nepovezane izmene.
+4. Ne tvrdi da je nešto provereno ako stvarna komanda nije izvršena.
+5. Ne čitaj .env, tajne ili pristupne tokene.`, 'examples/ers-ai-workflow/.ai/AI_INSTRUCTIONS.md'),
+    text('paragraph', '<code>.ai/AI_USAGE.md</code> čuva sažet trag: zadatak, korišćeni kontekst, predlog modela, odluku tima i nezavisan dokaz provere. Potpuni chat transcript nije zamena za inženjersku evidenciju.'),
+  ]),
+
+  page('6.3. Skill za ponovljiv pregled pull request-a', [
+    text('h2', '6.3. Skill za ponovljiv pregled pull request-a'),
+    text('paragraph', 'Procedura <code>.ai/skills/review-pull-request/SKILL.md</code> razdvaja review od implementacije. Isti postupak može da se primeni na više izmena u solution-u.'),
+    code('markdown', `# review-pull-request
+
+## Ulazi
+- zahtev i kriterijumi prihvatanja
+- git diff
+- AI_INSTRUCTIONS.md
+- rezultat build/test komandi
+
+## Postupak
+1. Sažmi očekivano ponašanje.
+2. Proveri da li diff izlazi iz obima zahteva.
+3. Proveri Dependency Rule i granice modula.
+4. Pregledaj negativne i granične scenarije.
+5. Uporedi promenjeno ponašanje sa testovima.
+6. Prijavi nalaze po ozbiljnosti.
+
+## Ograničenje
+Ne menjaj kod tokom review faze.`, 'Sažeta verzija procedure iz gotovog primera'),
+    callout('info', 'SRP važi i za agentski workflow', 'Review uloga ne treba istovremeno da bude autor izmene koju ocenjuje. Razdvajanje odgovornosti olakšava nezavisnu proveru.'),
+  ]),
+
+  page('6.4. Specijalizovane uloge i najmanje privilegije', [
+    text('h2', '6.4. Specijalizovane uloge i najmanje privilegije'),
+    table(['Uloga u primeru', 'Ulazi / dozvole', 'Ograničenje'], [
+      ['architecture-reviewer', 'Čitanje solution-a, source-a, instrukcija i diff-a.', 'Ne piše kod.'],
+      ['implementer', 'Menja samo fajlove iz usvojenog plana i pokreće provere.', 'Ne proširuje poslovni zahtev.'],
+      ['test/review faza', 'Pokreće solution testove i analizira rezultat.', 'Ne menja test samo da sakrije grešku.'],
     ]),
-  ]),
-
-  page('6.3. Skill kao ponovljiva procedura', [
-    text('h2', '6.3. Skill kao ponovljiva procedura'),
-    text('paragraph', 'Kada tim isti razvojni postupak ponavlja kroz više stavki, korisno je da postupak bude zapisan kao verzionisana procedura. Skill treba da odredi kada se koristi, koje ulaze očekuje, kojim redosledom se izvršavaju koraci, šta vraća i šta namerno ne radi.'),
-    code('markdown', `# review-pull-request / SKILL.md\n\n## Svrha\nPregled jednog pull request-a u odnosu na zahtev, arhitekturu i testove.\n\n## Ulazi\n- stavka i kriterijumi prihvatanja\n- git diff\n- relevantne projektne instrukcije\n- rezultat testova kada je dostupan\n\n## Postupak\n1. Sažmi očekivano ponašanje.\n2. Proveri da li diff izlazi iz traženog obima.\n3. Proveri smer zavisnosti i granice modula.\n4. Pregledaj negativne i granične scenarije.\n5. Uporedi promenjeno ponašanje sa testovima.\n6. Prijavi nalaze po ozbiljnosti.\n\n## Ograničenje\nNe menjaj kod.`),
-    callout('note', 'Procedura mora rešavati ponovljiv problem', 'Skill nema veliku vrednost ako je samo dugačak prompt vezan za jednu konkretnu stavku. Vrednost postoji kada isti postupak može da se primeni na više sličnih situacija i da daje dosledan oblik rezultata.'),
-  ]),
-
-  page('6.4. Specijalizovani agenti i dozvole', [
-    text('h2', '6.4. Specijalizovani agenti i dozvole'),
-    text('paragraph', 'Specijalizovani agent dobija jasno ograničenu odgovornost i skup dozvoljenih alata. Razdvajanje ima smisla kada smanjuje mešanje uloga ili rizik od neželjene izmene. Agent za arhitektonsku analizu može imati pristup samo za čitanje, dok implementacioni agent može menjati kod tek nakon usvojenog plana.'),
-    table(['Uloga', 'Dozvoljeno', 'Ograničenje'], [
-      ['Arhitektonska analiza', 'Čitanje koda i dokumentacije, analiza uticaja i predlog plana.', 'Ne menja kod.'],
-      ['Implementacija', 'Izmena koda u okviru odobrenog plana.', 'Ne proširuje samostalno poslovni zahtev.'],
-      ['Testiranje', 'Pokretanje testova i analiza neuspeha.', 'Ne menja test samo da bi prikrio problem.'],
-      ['Pregled', 'Čitanje zahteva, diff-a i rezultata testova.', 'Ne menja promenu koju ocenjuje.'],
-    ]),
-    callout('info', 'Najmanje potrebne privilegije', 'Agent treba da dobije samo one alate koji su mu potrebni za zadatak. Ograničenje dozvola olakšava razumevanje posledica i smanjuje mogućnost da faza pregleda neprimetno postane faza implementacije.'),
-  ]),
-
-  page('6.5. Predaja zadatka i izbor složenosti toka', [
-    text('h2', '6.5. Predaja zadatka i izbor složenosti toka'),
-    text('paragraph', 'Više agenata nije automatski bolje rešenje. Svaka predaja zadatka uvodi dodatni trošak i mogućnost gubitka konteksta. Za mali lokalni refaktoring jedan dobro ograničen agent može biti dovoljan. Više uloga ima smisla kada postoje jasno različite odgovornosti, različite dozvole ili nezavisna faza pregleda.'),
     code('json', `{
-  "task": "Implement PREMIUM-42 according to approved plan",
+  "task": "Implement approved reservation quantity rule",
   "constraints": [
-    "Do not move discount rules into controllers",
-    "Keep SeasonalDiscount behavior unchanged"
+    "Keep business rule outside Api",
+    "Do not add Infrastructure dependency to Domain/Application"
   ],
   "filesToConsider": [
-    "src/Application/DiscountService.cs",
-    "tests/DiscountServiceTests.cs"
+    "src/EquipmentReservation.Domain/InventoryItem.cs",
+    "src/EquipmentReservation.Application/CreateReservation.cs",
+    "tests/EquipmentReservation.Tests/ReservationTests.cs"
   ],
-  "expectedOutput": "small diff plus verification commands"
-}`, 'Primer strukturirane predaje zadatka između uloga'),
-    table(['Situacija', 'Prikladniji pristup'], [
-      ['Mala lokalna izmena', 'Jedan agent sa jasnim planom i proverom.'],
-      ['Odvojene faze analiza → implementacija → pregled', 'Više uloga može povećati disciplinu i sledljivost.'],
-      ['Rizične dozvole za izmenu', 'Uloge samo za čitanje odvojiti od implementacije.'],
-      ['Nejasan ili promenljiv zahtev', 'Najpre ljudska odluka i razjašnjenje zahteva; ne povećavati broj agenata.'],
+  "verification": [
+    "dotnet build EquipmentReservation.sln",
+    "dotnet test EquipmentReservation.sln --no-build"
+  ]
+}`, 'Strukturirana predaja zadatka implementacionoj ulozi'),
+  ]),
+
+  page('6.5. AI rezultat nije dokaz', [
+    text('h2', '6.5. AI rezultat nije dokaz'),
+    text('paragraph', 'Model može reći da promena „izgleda ispravno“, ali završetak zadatka se zasniva na stvarnim signalima. Za ovaj primer minimalni signal je uspešan build solution-a, uspešan NUnit skup i pregled konačnog diff-a.'),
+    code('bash', `dotnet build EquipmentReservation.sln --configuration Release
+dotnet test EquipmentReservation.sln --configuration Release --no-build
+git diff -- .`, 'Minimalna nezavisna provera nakon AI izmene'),
+    list([
+      'Ako komanda nije izvršena, rezultat se ne beleži kao uspešna provera.',
+      'Ako test padne, ne menja se očekivanje testa bez razumevanja poslovnog pravila.',
+      'Ako diff dodiruje slojeve koji nisu bili u planu, promena se vraća na analizu.',
+      'Ako agent traži tajne ili .env, zahtev se odbija i prelazi na guardrail temu iz Vežbe 8.',
     ]),
   ]),
 
-  page('6.6. Provera razumevanja — instrukcije i proverljiv izlaz', [
-    text('h2', '6.6. Provera razumevanja — instrukcije i proverljiv izlaz'),
-    list([
-      '`AI_INSTRUCTIONS.md` sadrži stabilna projektna pravila i ograničenja.',
-      'Najmanje jedan zadatak koristi unapred definisan strukturirani oblik izlaza.',
-      '`AI_USAGE.md` sadrži reprezentativne zapise sa odlukom tima i dokazom provere.',
-      'Tim ume da objasni koje su sugestije prihvaćene, koje su odbačene i zbog čega.',
-      'Rezultat AI alata se ne prihvata kao dokaz bez stvarnog razvojnog signala.'
+  page('6.6. Rad na vežbi — jedan stvarni AI razvojni tok', [
+    text('h2', '6.6. Rad na vežbi — jedan stvarni AI razvojni tok'),
+    callout('task', 'Zadatak', 'Na kopiji <code>EquipmentReservation.sln</code> zadati malu promenu poslovnog pravila. Prvo koristiti architecture-reviewer samo za analizu; zatim implementer-u proslediti usvojen plan. Na kraju pokrenuti solution build/test, pregledati diff i uneti sažet zapis u <code>.ai/AI_USAGE.md</code>.'),
+    table(['Dokaz', 'Šta student pokazuje'], [
+      ['Plan pre izmene', 'Da je razumeo pogođene slojeve i granice.'],
+      ['Mali diff', 'Da agentski tok nije nekontrolisano proširio obim.'],
+      ['Build + test rezultat', 'Da provera nije zasnovana na tvrdnji modela.'],
+      ['AI_USAGE zapis', 'Da tim može rekonstruisati odluku i razlog prihvatanja/odbijanja predloga.'],
     ]),
-    callout('note', 'Veza sa projektnom kontrolnom tačkom', 'Ovi zahtevi ulaze u projektnu kontrolnu tačku P4, koja zaokružuje Vežbe 6–8.'),
-  ]),
-
-  page('6.7. Provera razumevanja — procedure i agentski tok', [
-    text('h2', '6.7. Provera razumevanja — procedure i agentski tok'),
-    list([
-      'Najmanje dve ponovljive procedure imaju jasan ulaz, korake, izlaz i ograničenja.',
-      'Najmanje dve agentske uloge imaju različite odgovornosti ili različite dozvole.',
-      'Najmanje jedan stvarni projektni zadatak prolazi kroz dokumentovan tok predaje između uloga kada je takva podela opravdana.',
-      'Tim je uporedio jednostavniji i složeniji tok rada i može da obrazloži izbor.',
-      'Konačna odluka o prihvatanju promene ostaje na timu i zasniva se na proverljivim rezultatima.'
-    ]),
-    callout('success', 'Ishod vežbe', 'Student ume da projektuje kontrolisan tok rada sa AI podrškom tako da su odgovornosti, dozvole, trag odluka i nezavisna provera jasno razdvojeni.'),
+    callout('success', 'Ishod vežbe', 'Student ume da uključi AI u razvoj bez promene osnovnih SOLID/Clean Architecture pravila i bez predaje odgovornosti modelu.'),
   ]),
 ]

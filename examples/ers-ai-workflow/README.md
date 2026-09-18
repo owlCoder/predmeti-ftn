@@ -10,7 +10,7 @@ Glavna ulazna tačka za kod je:
 EquipmentReservation.sln
 ```
 
-Solution učitava svih sedam projekata: `Domain`, `Application`, `Infrastructure`, `Api`, `Mcp`, `Guardrails` i `Tests`. U Visual Studio/Rider okruženju dovoljno je otvoriti ovaj `.sln`; iz terminala se ceo primer proverava ovako:
+Solution učitava osam projekata: `Domain`, `Application`, `Infrastructure`, `Api`, `ConsoleUi`, `Mcp`, `Guardrails` i `Tests`. U Visual Studio/Rider okruženju dovoljno je otvoriti ovaj `.sln`; iz terminala se ceo primer proverava ovako:
 
 ```bash
 cd examples/ers-ai-workflow
@@ -18,6 +18,8 @@ dotnet restore EquipmentReservation.sln
 dotnet build EquipmentReservation.sln --configuration Release
 dotnet test EquipmentReservation.sln --configuration Release --no-build
 ```
+
+Za NUnit 4 višestruke provere koriste `using (Assert.EnterMultipleScope())`; time se izbegava dvosmislen `Assert.Multiple(...)` overload u novijim NUnit verzijama.
 
 ## Zašto jedan primer kroz četiri vežbe?
 
@@ -30,27 +32,60 @@ Domain
   ↑
 Application (use-case + portovi)
   ↑                 ↑
-Infrastructure      Api (composition root)
+Infrastructure      Api / ConsoleUi (presentation + composition root)
 
 Development tooling, odvojeno od poslovnog jezgra:
 Mcp   Guardrails   .ai/   evals/
 ```
 
-Dependency Rule: unutrašnji slojevi ne poznaju spoljne. `Domain` nema zavisnosti; `Application` poznaje samo `Domain`; `Infrastructure` implementira portove koje definiše `Application`; `Api` sklapa sistem. MCP i Guardrails su razvojni alati i ne postaju zavisnosti poslovnog jezgra.
+Dependency Rule: unutrašnji slojevi ne poznaju spoljne. `Domain` nema zavisnosti; `Application` poznaje samo `Domain`; `Infrastructure` implementira portove koje definiše `Application`; `Api` i `ConsoleUi` sklapaju sistem kao dva različita presentation adaptera. MCP i Guardrails su razvojni alati i ne postaju zavisnosti poslovnog jezgra.
 
 ## Vežba 5 — integracija modula, ugovori i podaci
 
 Fokus:
-- `IInventoryModule` je ugovor između Reservations use-case-a i Inventory dela sistema;
+- `IInventoryModule` je write ugovor između Reservations use-case-a i Inventory dela sistema;
+- `IInventoryReadModel` je poseban read port za UI/API adaptere;
 - `CreateReservationHandler` orkestrira use-case, ali ne zna konkretnu infrastrukturu;
 - `RequestId` je idempotency key;
 - `InventoryItem` čuva poslovno pravilo da se ne može rezervisati više od raspoloživog;
 - NUnit test potvrđuje da ponovljen zahtev ne umanjuje zalihu dva puta.
 
-Pokretanje API-ja:
+### Console UI
+
+Pokretanje:
+
+```bash
+dotnet run --project src/EquipmentReservation.ConsoleUi
+```
+
+Meni omogućava:
+1. prikaz trenutnog stanja demo opreme;
+2. kreiranje rezervacije;
+3. prikaz statusa rezervacije i preostale količine.
+
+Console UI nema poslovnu logiku — poziva isti `CreateReservationHandler` i Application portove koje koristi ostatak sistema.
+
+### HTTP API
+
+Pokretanje:
 
 ```bash
 dotnet run --project src/EquipmentReservation.Api
+```
+
+Dostupni endpointi:
+
+```text
+GET  /
+GET  /health
+GET  /inventory/{equipmentId}
+POST /reservations
+```
+
+Demo equipment ID:
+
+```text
+11111111-1111-1111-1111-111111111111
 ```
 
 Primer zahteva:
@@ -63,6 +98,14 @@ Primer zahteva:
   "quantity": 2
 }
 ```
+
+Primer provere stanja:
+
+```bash
+curl http://localhost:5000/inventory/11111111-1111-1111-1111-111111111111
+```
+
+Port zavisi od lokalnog ASP.NET Core profila, pa se koristi URL koji `dotnet run` ispiše u terminalu.
 
 ## Vežba 6 — kontrolisan AI workflow
 
@@ -127,10 +170,6 @@ Testovi pokrivaju:
 - blokiranje destruktivnih komandi;
 - blokiranje pristupa `.env` datoteci.
 
-### NUnit 4 napomena
-
-Primer koristi NUnit 4. Za grupisane provere koristi se `using (Assert.EnterMultipleScope())` umesto `Assert.Multiple(() => ...)`, čime se izbegava dvosmislen izbor između `TestDelegate` i `Action` overload-a u novijim NUnit verzijama.
-
 ## SOLID mapa
 
 | Princip | Primer |
@@ -138,8 +177,8 @@ Primer koristi NUnit 4. Za grupisane provere koristi se `using (Assert.EnterMult
 | SRP | `Reservation`, `CreateReservationHandler`, `InMemoryInventoryModule`, `DangerousCommandGuardrail` imaju odvojene odgovornosti. |
 | OCP | Novi guardrail se dodaje kao nova `IToolGuardrail` implementacija. |
 | LSP | Svaka `IInventoryModule` implementacija mora vratiti isti ugovor uspeha/neuspeha. |
-| ISP | `IInventoryModule` izlaže samo operaciju koju Reservations use-case zaista treba. |
-| DIP | `CreateReservationHandler` zavisi od `IInventoryModule` i `IReservationRepository`, ne od konkretnih adaptera. |
+| ISP | Write port `IInventoryModule` i read port `IInventoryReadModel` su odvojeni; adapter dobija samo operacije koje su mu potrebne. |
+| DIP | `CreateReservationHandler`, API i Console UI koriste apstrakcije iz Application sloja umesto da poslovna pravila vezuju za infrastrukturu. |
 
 ## Napomena za nastavu
 

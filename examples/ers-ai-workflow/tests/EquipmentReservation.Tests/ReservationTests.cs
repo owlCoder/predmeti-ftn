@@ -16,12 +16,12 @@ public sealed class ReservationTests
 
         var result = item.Reserve(3);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(result.Success, Is.False);
             Assert.That(result.ErrorCode, Is.EqualTo("InsufficientStock"));
             Assert.That(item.Available, Is.EqualTo(2));
-        });
+        }
     }
 
     [Test]
@@ -44,13 +44,13 @@ public sealed class ReservationTests
         var first = await handler.HandleAsync(command, CancellationToken.None);
         var replay = await handler.HandleAsync(command, CancellationToken.None);
 
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
             Assert.That(first.Status, Is.EqualTo(ReservationStatus.Confirmed));
             Assert.That(replay.ReservationId, Is.EqualTo(first.ReservationId));
             Assert.That(replay.Replayed, Is.True);
             Assert.That(inventory.GetAvailable(equipmentId), Is.EqualTo(3));
-        });
+        }
     }
 
     [TestCase("git push --force origin main")]

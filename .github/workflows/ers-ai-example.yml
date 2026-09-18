@@ -1,0 +1,31 @@
+name: ERS AI example
+
+on:
+  pull_request:
+    paths:
+      - 'examples/ers-ai-workflow/**'
+      - '.github/workflows/ers-ai-example.yml'
+  push:
+    branches:
+      - main
+    paths:
+      - 'examples/ers-ai-workflow/**'
+      - '.github/workflows/ers-ai-example.yml'
+
+jobs:
+  dotnet:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: examples/ers-ai-workflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+      - name: Build API
+        run: dotnet build src/EquipmentReservation.Api/EquipmentReservation.Api.csproj --configuration Release
+      - name: Build MCP server
+        run: dotnet build src/EquipmentReservation.Mcp/EquipmentReservation.Mcp.csproj --configuration Release
+      - name: Run tests
+        run: dotnet test tests/EquipmentReservation.Tests/EquipmentReservation.Tests.csproj --configuration Release

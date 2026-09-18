@@ -4,12 +4,20 @@ on:
   pull_request:
     paths:
       - 'examples/ers-ai-workflow/**'
+      - 'src/content/canvaExerciseIntegration.ts'
+      - 'src/content/canvaExerciseAiWorkflow.ts'
+      - 'src/content/canvaExercise9.ts'
+      - 'src/content/canvaExercise10.ts'
       - '.github/workflows/ers-ai-example.yml'
   push:
     branches:
       - main
     paths:
       - 'examples/ers-ai-workflow/**'
+      - 'src/content/canvaExerciseIntegration.ts'
+      - 'src/content/canvaExerciseAiWorkflow.ts'
+      - 'src/content/canvaExercise9.ts'
+      - 'src/content/canvaExercise10.ts'
       - '.github/workflows/ers-ai-example.yml'
 
 jobs:
@@ -23,9 +31,9 @@ jobs:
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '8.0.x'
-      - name: Build API
-        run: dotnet build src/EquipmentReservation.Api/EquipmentReservation.Api.csproj --configuration Release
-      - name: Build MCP server
-        run: dotnet build src/EquipmentReservation.Mcp/EquipmentReservation.Mcp.csproj --configuration Release
+      - name: Restore solution
+        run: dotnet restore EquipmentReservation.sln
+      - name: Build solution
+        run: dotnet build EquipmentReservation.sln --configuration Release --no-restore
       - name: Run tests
-        run: dotnet test tests/EquipmentReservation.Tests/EquipmentReservation.Tests.csproj --configuration Release
+        run: dotnet test EquipmentReservation.sln --configuration Release --no-build --verbosity minimal

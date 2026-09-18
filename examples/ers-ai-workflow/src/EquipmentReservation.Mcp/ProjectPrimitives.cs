@@ -49,12 +49,12 @@ public sealed class ProjectTools(ProjectWorkspace workspace)
     }
 
     [McpServerTool(Name = "run_unit_tests", Destructive = false, Idempotent = true, OpenWorld = false)]
-    [Description("Runs the teaching project's NUnit test project and returns a structured summary.")]
+    [Description("Runs the whole EquipmentReservation solution and returns a structured summary.")]
     public async Task<string> RunUnitTests(CancellationToken cancellationToken)
     {
         var result = await workspace.RunFixedCommandAsync(
             "dotnet",
-            ["test", "tests/EquipmentReservation.Tests/EquipmentReservation.Tests.csproj", "--nologo", "--verbosity", "minimal"],
+            ["test", "EquipmentReservation.sln", "--nologo", "--verbosity", "minimal"],
             cancellationToken);
 
         return workspace.ToJson(new

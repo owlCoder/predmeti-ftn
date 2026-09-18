@@ -2,6 +2,23 @@
 
 Jedan koherentan, izvršiv primer koji prati Vežbe 5–8 iz praktikuma za **Elemente razvoja softvera**.
 
+## Otvaranje celog primera
+
+Glavna ulazna tačka za kod je:
+
+```text
+EquipmentReservation.sln
+```
+
+Solution učitava svih sedam projekata: `Domain`, `Application`, `Infrastructure`, `Api`, `Mcp`, `Guardrails` i `Tests`. U Visual Studio/Rider okruženju dovoljno je otvoriti ovaj `.sln`; iz terminala se ceo primer proverava ovako:
+
+```bash
+cd examples/ers-ai-workflow
+dotnet restore EquipmentReservation.sln
+dotnet build EquipmentReservation.sln --configuration Release
+dotnet test EquipmentReservation.sln --configuration Release --no-build
+```
+
 ## Zašto jedan primer kroz četiri vežbe?
 
 Student na V5 prvo dobija normalan softverski sistem sa jasnim granicama. Na V6 uvodi AI razvojni tok bez menjanja poslovnog jezgra. Na V7 isti projekat izlaže kontrolisan kontekst kroz MCP. Na V8 uvodi determinističke guardrail-e i evaluacione scenarije.
@@ -19,7 +36,7 @@ Development tooling, odvojeno od poslovnog jezgra:
 Mcp   Guardrails   .ai/   evals/
 ```
 
-Dependency Rule: unutrašnji slojevi ne poznaju spoljne. `Domain` nema zavisnosti; `Application` poznaje samo `Domain`; `Infrastructure` implementira portove koje definiše `Application`; `Api` sklapa sistem.
+Dependency Rule: unutrašnji slojevi ne poznaju spoljne. `Domain` nema zavisnosti; `Application` poznaje samo `Domain`; `Infrastructure` implementira portove koje definiše `Application`; `Api` sklapa sistem. MCP i Guardrails su razvojni alati i ne postaju zavisnosti poslovnog jezgra.
 
 ## Vežba 5 — integracija modula, ugovori i podaci
 
@@ -60,12 +77,12 @@ Poenta: AI pravila ne ulaze u `Domain`/`Application`; razvojni alat može da se 
 
 ## Vežba 7 — MCP
 
-`EquipmentReservation.Mcp` koristi zvanični C# MCP SDK i stdio transport. Izlaže:
+`EquipmentReservation.Mcp` koristi C# MCP SDK i stdio transport. Izlaže:
 - resource `project://instructions`;
 - resource `project://readme`;
 - tool `get_project_structure`;
 - tool `get_git_diff`;
-- tool `run_unit_tests`.
+- tool `run_unit_tests` koji pokreće ceo `EquipmentReservation.sln`.
 
 Server ne izlaže proizvoljnu shell komandu i blokira izlazak van project root-a. To je namerno uži interfejs u skladu sa ISP i principom najmanjih privilegija.
 
@@ -94,13 +111,15 @@ Primeri koji se blokiraju:
 
 ## Provera build-a i testova
 
+Jedan solution je jedina komanda koja je potrebna za proveru kompletnog primera:
+
 ```bash
-dotnet build src/EquipmentReservation.Api/EquipmentReservation.Api.csproj
-dotnet build src/EquipmentReservation.Mcp/EquipmentReservation.Mcp.csproj
-dotnet test tests/EquipmentReservation.Tests/EquipmentReservation.Tests.csproj
+dotnet restore EquipmentReservation.sln
+dotnet build EquipmentReservation.sln --configuration Release --no-restore
+dotnet test EquipmentReservation.sln --configuration Release --no-build
 ```
 
-Iste komande su dodate i u GitHub Actions workflow da primer ne ostane samo dokumentacioni snippet.
+Iste komande koristi GitHub Actions workflow, tako da `.sln` ostaje izvršiva specifikacija kompletnog nastavnog primera.
 
 Testovi pokrivaju:
 - domensko pravilo zalihe;

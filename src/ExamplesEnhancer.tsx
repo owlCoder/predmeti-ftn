@@ -21,6 +21,31 @@ type LessonExamples = {
   entries: ExampleEntry[]
 }
 
+type SupplementalExample = {
+  exercise: number
+  title: string
+  description: string
+  zip: string
+  tags: string[]
+}
+
+const supplementalExamples: SupplementalExample[] = [
+  {
+    exercise: 2,
+    title: 'Logger–Blogger',
+    description: 'Studija slučaja za SOLID, razdvajanje odgovornosti i izdvajanje infrastrukturnih detalja iz poslovnog jezgra.',
+    zip: 'Logger-Bloger.zip',
+    tags: ['SOLID', 'SRP', 'DIP'],
+  },
+  {
+    exercise: 3,
+    title: 'ECommerce',
+    description: 'Primer razdvajanja Domain, Application i Infrastructure slojeva, repozitorijuma, komandi i upita.',
+    zip: 'E-Commerce.zip',
+    tags: ['Clean Architecture', 'Repository', 'Use cases'],
+  },
+]
+
 const lessons: LessonExamples[] = [
   {
     number: 5,
@@ -113,17 +138,46 @@ function ExamplesView() {
     <main className="examples-shell">
       <section className="examples-hero">
         <div>
-          <span className="eyebrow">Izvršivi nastavni primer</span>
+          <span className="eyebrow">Izvršivi nastavni primeri</span>
           <h1>Primeri za vežbe</h1>
           <p>
-            Vežbe 5–8 koriste isti <strong>EquipmentReservation</strong> projekat. Možeš preuzeti ceo paket ili
-            poseban samostalni ZIP za bilo koju vežbu, bez traženja kroz ceo praktikum.
+            Ovde su na jednom mestu studije slučaja iz ranijih vežbi i kompletan <strong>EquipmentReservation</strong>
+            primer za Vežbe 5–8. Svaki paket može da se preuzme direktno, bez listanja praktikuma.
           </p>
         </div>
         <a className="examples-download-primary" href={zipUrl} download>
           <DownloadIcon />
-          <span><strong>Preuzmi sve primere</strong><small>ZIP · V5–V8 · uključuje EquipmentReservation.sln</small></span>
+          <span><strong>Preuzmi V5–V8</strong><small>ZIP · uključuje EquipmentReservation.sln</small></span>
         </a>
+      </section>
+
+      <section className="examples-supplemental">
+        <div className="examples-section-heading">
+          <div>
+            <span className="eyebrow">Studije slučaja</span>
+            <h2>Dodatni primeri</h2>
+          </div>
+          <p>Gotovi ZIP paketi koji se koriste uz ranije vežbe.</p>
+        </div>
+        <div className="supplemental-grid">
+          {supplementalExamples.map((example) => (
+            <article className="supplemental-card" key={example.title}>
+              <div className="supplemental-card-topline">
+                <span className="supplemental-exercise">Vežba {example.exercise}</span>
+                <span className="supplemental-format">ZIP</span>
+              </div>
+              <h3>{example.title}</h3>
+              <p>{example.description}</p>
+              <div className="supplemental-tags">
+                {example.tags.map((tag) => <span key={tag}>{tag}</span>)}
+              </div>
+              <a className="supplemental-download" href={publicAsset(`/${example.zip}`)} download>
+                <DownloadIcon />
+                <span>Preuzmi {example.title}</span>
+              </a>
+            </article>
+          ))}
+        </div>
       </section>
 
       <section className="examples-card">
@@ -133,7 +187,7 @@ function ExamplesView() {
             <strong>EquipmentReservation</strong>
             <span>Jedan solution koji se nadograđuje kroz četiri vežbe</span>
           </div>
-          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> Svi ZIP</a>
+          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> V5–V8 ZIP</a>
         </div>
 
         <div className="examples-tree" role="tree" aria-label="Primeri po vežbama">
@@ -176,8 +230,8 @@ function ExamplesView() {
       </section>
 
       <section className="examples-footer-note">
-        <strong>Kako koristiti primer</strong>
-        <span>Svaki pojedinačni ZIP sadrži ceo <code>EquipmentReservation.sln</code> i <code>LEKCIJA.md</code> sa fokusom te vežbe. Za kompletan kurs koristi „Preuzmi sve primere“.</span>
+        <strong>Kako koristiti V5–V8</strong>
+        <span>Svaki pojedinačni ZIP sadrži ceo <code>EquipmentReservation.sln</code> i <code>LEKCIJA.md</code> sa fokusom te vežbe. Za sve četiri vežbe koristi „Preuzmi V5–V8“.</span>
       </section>
     </main>
   )

@@ -33,14 +33,14 @@ const supplementalExamples: SupplementalExample[] = [
   {
     exercise: 2,
     title: 'Logger–Blogger',
-    description: 'Studija slučaja za SOLID, razdvajanje odgovornosti i izdvajanje infrastrukturnih detalja iz poslovnog jezgra.',
+    description: 'Primer za primenu SOLID principa kroz razdvajanje poslovne logike, logovanja i infrastrukturnih odgovornosti.',
     zip: 'Logger-Bloger.zip',
     tags: ['SOLID', 'SRP', 'DIP'],
   },
   {
     exercise: 3,
     title: 'ECommerce',
-    description: 'Primer razdvajanja Domain, Application i Infrastructure slojeva, repozitorijuma, komandi i upita.',
+    description: 'Primer Clean Architecture organizacije sa domenom, aplikacionim slojem, repozitorijumima, komandama i upitima.',
     zip: 'E-Commerce.zip',
     tags: ['Clean Architecture', 'Repository', 'Use cases'],
   },
@@ -50,55 +50,56 @@ const lessons: LessonExamples[] = [
   {
     number: 5,
     title: 'Integracija modula, ugovori i podaci',
-    summary: 'Clean Architecture osnova: domen, use-case, portovi, adapteri, composition root i idempotentnost.',
+    summary: 'Osnova Clean Architecture pristupa: domen, aplikacioni sloj, portovi, adapteri, API i idempotentnost zahteva.',
     zip: 'vezba-5-integracija-modula.zip',
     entries: [
-      { path: 'EquipmentReservation.sln', note: 'Glavni solution za ceo primer', kind: 'solution' },
+      { path: 'EquipmentReservation.sln', note: 'Glavni solution za otvaranje primera', kind: 'solution' },
       { path: 'src/EquipmentReservation.Domain/', note: 'Entiteti i poslovna pravila', kind: 'code' },
-      { path: 'src/EquipmentReservation.Application/', note: 'Use-case i portovi prema spoljnim modulima', kind: 'code' },
-      { path: 'src/EquipmentReservation.Infrastructure/', note: 'Implementacije portova / adapteri', kind: 'code' },
-      { path: 'src/EquipmentReservation.Api/', note: 'Composition root i HTTP granica', kind: 'code' },
-      { path: 'tests/EquipmentReservation.Tests/ReservationTests.cs', note: 'Domen i idempotentnost', kind: 'test' },
+      { path: 'src/EquipmentReservation.Application/', note: 'Use-case logika i portovi', kind: 'code' },
+      { path: 'src/EquipmentReservation.Infrastructure/', note: 'Implementacije portova i infrastrukturni adapteri', kind: 'code' },
+      { path: 'src/EquipmentReservation.Api/', note: 'HTTP API kao ulaz u aplikaciju', kind: 'code' },
+      { path: 'src/EquipmentReservation.ConsoleUi/', note: 'Jednostavan konzolni interfejs za rad sa primerom', kind: 'code' },
+      { path: 'tests/EquipmentReservation.Tests/ReservationTests.cs', note: 'Testovi poslovnih pravila i idempotentnosti', kind: 'test' },
     ],
   },
   {
     number: 6,
     title: 'Kontrolisan razvoj uz AI',
-    summary: 'Stabilne instrukcije, trag korišćenja, ponovljiva procedura i odvojene agentske uloge.',
+    summary: 'Projektne instrukcije, evidencija odluka, ponovljive procedure i jasno razdvojene uloge u AI razvojnom toku.',
     zip: 'vezba-6-ai-workflow.zip',
     entries: [
       { path: '.ai/AI_INSTRUCTIONS.md', note: 'Projektna pravila za AI razvoj', kind: 'config' },
-      { path: '.ai/AI_USAGE.md', note: 'Evidencija odluka i provere', kind: 'config' },
-      { path: '.ai/skills/review-pull-request/SKILL.md', note: 'Ponovljiva procedura za pregled PR-a', kind: 'config' },
-      { path: '.ai/agents/architecture-reviewer.md', note: 'Read-only arhitektonska analiza', kind: 'config' },
-      { path: '.ai/agents/implementer.md', note: 'Implementaciona uloga sa ograničenim zadatkom', kind: 'config' },
+      { path: '.ai/AI_USAGE.md', note: 'Evidencija odluka i provera', kind: 'config' },
+      { path: '.ai/skills/review-pull-request/SKILL.md', note: 'Procedura za pregled izmene', kind: 'config' },
+      { path: '.ai/agents/architecture-reviewer.md', note: 'Uloga za proveru arhitekture', kind: 'config' },
+      { path: '.ai/agents/implementer.md', note: 'Uloga za implementaciju zadatka', kind: 'config' },
     ],
   },
   {
     number: 7,
     title: 'MCP: povezivanje agenata sa projektom',
-    summary: 'Kontrolisan pristup projektnoj dokumentaciji, strukturi, diff-u i stvarnom rezultatu testova.',
+    summary: 'Kontrolisan pristup projektnoj dokumentaciji, strukturi izvornog koda, izmenama i rezultatima testova.',
     zip: 'vezba-7-mcp.zip',
     entries: [
-      { path: 'src/EquipmentReservation.Mcp/Program.cs', note: 'MCP host i composition root', kind: 'code' },
-      { path: 'src/EquipmentReservation.Mcp/ProjectPrimitives.cs', note: 'Resources i tools', kind: 'code' },
-      { path: 'src/EquipmentReservation.Mcp/ProjectWorkspace.cs', note: 'Ograničena radna putanja i fiksne komande', kind: 'code' },
-      { path: '.ai/AI_INSTRUCTIONS.md', note: 'Resurs project://instructions', kind: 'config' },
+      { path: 'src/EquipmentReservation.Mcp/Program.cs', note: 'Pokretanje i konfiguracija MCP servera', kind: 'code' },
+      { path: 'src/EquipmentReservation.Mcp/ProjectPrimitives.cs', note: 'MCP resources i tools', kind: 'code' },
+      { path: 'src/EquipmentReservation.Mcp/ProjectWorkspace.cs', note: 'Kontrolisan pristup projektu i dozvoljenim komandama', kind: 'code' },
+      { path: '.ai/AI_INSTRUCTIONS.md', note: 'Projektna pravila dostupna kroz MCP resource', kind: 'config' },
     ],
   },
   {
     number: 8,
     title: 'Hooks, guardrails i evaluacije',
-    summary: 'Determinističke zabrane oko agentskog toka i evaluacioni scenariji za regresiju i bezbednost.',
+    summary: 'Zaštitna pravila za AI alate i evaluacioni scenariji za proveru arhitekture, bezbednosti i kvaliteta rezultata.',
     zip: 'vezba-8-guardrails-evals.zip',
     entries: [
-      { path: 'src/EquipmentReservation.Guardrails/Guardrails.cs', note: 'IToolGuardrail politike i evaluator', kind: 'code' },
-      { path: 'src/EquipmentReservation.Guardrails/Program.cs', note: 'Izvršivi hook adapter', kind: 'code' },
-      { path: '.claude/settings.json', note: 'Primer PreToolUse povezivanja', kind: 'config' },
-      { path: 'evals/review-architecture.json', note: 'Arhitektonska regresija', kind: 'eval' },
-      { path: 'evals/prompt-injection.json', note: 'Prompt-injection scenario', kind: 'eval' },
-      { path: 'evals/missing-context.json', note: 'Nepotpun kontekst', kind: 'eval' },
-      { path: 'tests/EquipmentReservation.Tests/ReservationTests.cs', note: 'Izvršive guardrail provere', kind: 'test' },
+      { path: 'src/EquipmentReservation.Guardrails/Guardrails.cs', note: 'Guardrail pravila i evaluator', kind: 'code' },
+      { path: 'src/EquipmentReservation.Guardrails/Program.cs', note: 'Adapter za izvršavanje guardrail provera', kind: 'code' },
+      { path: '.claude/settings.json', note: 'Primer povezivanja PreToolUse hook-a', kind: 'config' },
+      { path: 'evals/review-architecture.json', note: 'Provera arhitektonske regresije', kind: 'eval' },
+      { path: 'evals/prompt-injection.json', note: 'Scenario za prompt injection', kind: 'eval' },
+      { path: 'evals/missing-context.json', note: 'Scenario sa nepotpunim kontekstom', kind: 'eval' },
+      { path: 'tests/EquipmentReservation.Tests/ReservationTests.cs', note: 'Automatizovane guardrail provere', kind: 'test' },
     ],
   },
 ]
@@ -138,26 +139,22 @@ function ExamplesView() {
     <main className="examples-shell">
       <section className="examples-hero">
         <div>
-          <span className="eyebrow">Izvršivi nastavni primeri</span>
+          <span className="eyebrow">Nastavni primeri</span>
           <h1>Primeri za vežbe</h1>
           <p>
-            Ovde su na jednom mestu studije slučaja iz ranijih vežbi i kompletan <strong>EquipmentReservation</strong>
-            primer za Vežbe 5–8. Svaki paket može da se preuzme direktno, bez listanja praktikuma.
+            Primeri su organizovani po vežbama i namenjeni su praktičnom radu uz gradivo sa nastave.
+            Svaki primer može da se preuzme zasebno, a primer za vežbe 5–8 dostupan je i kao kompletan paket.
           </p>
         </div>
-        <a className="examples-download-primary" href={zipUrl} download>
-          <DownloadIcon />
-          <span><strong>Preuzmi V5–V8</strong><small>ZIP · uključuje EquipmentReservation.sln</small></span>
-        </a>
       </section>
 
       <section className="examples-supplemental">
         <div className="examples-section-heading">
           <div>
-            <span className="eyebrow">Studije slučaja</span>
+            <span className="eyebrow">Primeri uz ranije vežbe</span>
             <h2>Dodatni primeri</h2>
           </div>
-          <p>Gotovi ZIP paketi koji se koriste uz ranije vežbe.</p>
+          <p>Svaki primer je pripremljen kao zaseban paket za rad.</p>
         </div>
         <div className="supplemental-grid">
           {supplementalExamples.map((example) => (
@@ -173,7 +170,7 @@ function ExamplesView() {
               </div>
               <a className="supplemental-download" href={publicAsset(`/${example.zip}`)} download>
                 <DownloadIcon />
-                <span>Preuzmi {example.title}</span>
+                <span>Preuzmi primer</span>
               </a>
             </article>
           ))}
@@ -185,9 +182,9 @@ function ExamplesView() {
           <span className="examples-folder-icon"><FolderIcon /></span>
           <div>
             <strong>EquipmentReservation</strong>
-            <span>Jedan solution koji se nadograđuje kroz četiri vežbe</span>
+            <span>Primer koji se postepeno nadograđuje kroz vežbe 5–8</span>
           </div>
-          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> V5–V8 ZIP</a>
+          <a href={zipUrl} download className="examples-small-download"><DownloadIcon /> Preuzmi komplet</a>
         </div>
 
         <div className="examples-tree" role="tree" aria-label="Primeri po vežbama">
@@ -206,12 +203,12 @@ function ExamplesView() {
                 </summary>
                 <a className="lesson-download" href={lessonZipUrl} download onClick={(event) => event.stopPropagation()}>
                   <DownloadIcon />
-                  <span>ZIP V{lesson.number}</span>
+                  <span>Preuzmi</span>
                 </a>
                 <div className="lesson-body">
                   <div className="lesson-body-heading">
                     <p>{lesson.summary}</p>
-                    <a href={lessonZipUrl} download className="lesson-download-secondary"><DownloadIcon /> Preuzmi Vežbu {lesson.number}</a>
+                    <a href={lessonZipUrl} download className="lesson-download-secondary"><DownloadIcon /> Preuzmi vežbu {lesson.number}</a>
                   </div>
                   <ul className="example-file-list">
                     {lesson.entries.map((entry) => (
@@ -230,8 +227,8 @@ function ExamplesView() {
       </section>
 
       <section className="examples-footer-note">
-        <strong>Kako koristiti V5–V8</strong>
-        <span>Svaki pojedinačni ZIP sadrži ceo <code>EquipmentReservation.sln</code> i <code>LEKCIJA.md</code> sa fokusom te vežbe. Za sve četiri vežbe koristi „Preuzmi V5–V8“.</span>
+        <strong>Preuzimanje i rad</strong>
+        <span>Pojedinačni paket sadrži kompletan projekat i kratak vodič za konkretnu vežbu. Kompletan paket objedinjuje materijal za vežbe 5–8.</span>
       </section>
     </main>
   )
